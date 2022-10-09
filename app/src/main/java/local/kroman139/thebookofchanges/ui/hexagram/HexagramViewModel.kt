@@ -24,6 +24,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
+import local.kroman139.thebookofchanges.model.data.Hexagram
+import local.kroman139.thebookofchanges.model.data.previewHexagrams
 import local.kroman139.thebookofchanges.ui.hexagram.navigation.HexagramDestination
 import javax.inject.Inject
 
@@ -38,22 +40,18 @@ class HexagramViewModel @Inject constructor(
         flow {
             emit(
                 HexagramUiState(
-                    hexagramSymbol = "symbol",
-                    hexagramNumber = hexagramId,
+                    hexagram = previewHexagrams[0],
                 )
             )
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = HexagramUiState(
-                hexagramSymbol = "",
-                hexagramNumber = "",
+                hexagram = previewHexagrams[0],
             )
-
         )
 }
 
 data class HexagramUiState(
-    val hexagramSymbol: String,
-    val hexagramNumber: String,
+    val hexagram: Hexagram,
 )
