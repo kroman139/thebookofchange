@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
+import local.kroman139.thebookofchanges.data.repository.HexagramRepository
 import local.kroman139.thebookofchanges.model.data.Hexagram
 import local.kroman139.thebookofchanges.model.data.previewHexagrams
 import local.kroman139.thebookofchanges.ui.hexagram.navigation.HexagramDestination
@@ -32,6 +33,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HexagramViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    hexagramRepository: HexagramRepository,
 ) : ViewModel() {
     private val hexagramId: String =
         checkNotNull(savedStateHandle[HexagramDestination.hexagramIdArg])
