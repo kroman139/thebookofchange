@@ -28,14 +28,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import local.kroman139.thebookofchanges.designsystem.component.DevicePreviews
-import local.kroman139.thebookofchanges.designsystem.component.DummyText
 import local.kroman139.thebookofchanges.designsystem.component.HexagramSymbol
 import local.kroman139.thebookofchanges.designsystem.theme.TbocTheme
-import local.kroman139.thebookofchanges.model.data.Hexagram
-import local.kroman139.thebookofchanges.model.data.HexagramStroke
 import local.kroman139.thebookofchanges.model.data.previewHexagrams
 
 @Composable
@@ -59,18 +60,20 @@ internal fun HexagramScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    DummyText(
-        text = "hexagram screen! Number ${hexagramUiState.hexagram.id}",
-        modifier = modifier,
+    HexagramView(
+        hexagramUi = hexagramUiState,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(all = 16.dp),
     )
 }
 
 @Composable
 internal fun HexagramView(
-    hexagram: Hexagram,
+    hexagramUi: HexagramUiState,
     modifier: Modifier = Modifier,
 ) {
-    val rawStrokes = hexagram.getRawStrokes()
+    val hexagram = hexagramUi.hexagram
 
     Surface(
         modifier = modifier.background(color = Color.Gray),
@@ -82,7 +85,7 @@ internal fun HexagramView(
         ) {
             Row {
                 HexagramSymbol(
-                    rawStrokes = rawStrokes,
+                    rawStrokes = hexagramUi.rawStrokes,
                     modifier = Modifier.size(32.dp),
                 )
                 Text(
@@ -93,30 +96,110 @@ internal fun HexagramView(
             }
 
             Text(
-                text = "${hexagram.description}",
+                text = buildAnnotatedString {
+                    append(hexagram.text)
+                    append(" ")
+                    withStyle(SpanStyle(fontStyle = FontStyle.Italic)) {
+                        append(hexagram.summary)
+                    }
+                },
                 modifier = Modifier.padding(vertical = 8.dp),
             )
 
             hexagram.strokes.forEachIndexed { i, stroke ->
-                HexagramSymbol(
-                    rawStrokes = rawStrokes,
-                    modifier = Modifier.size(32.dp),
-                    highlightIndex = i,
-                )
+                BoxWithConstraints {
+                    if (maxWidth < 380.dp) {
+                        Column {
+                            HexagramSymbol(
+                                rawStrokes = hexagramUi.rawStrokes,
+                                modifier = Modifier
+                                    .padding(top = 8.dp)
+                                    .size(32.dp),
+                                highlightIndex = i,
+                            )
 
-                Text(
-                    text = "${stroke.text}",
-                    modifier = Modifier.padding(vertical = 8.dp),
-                )
+                            Text(
+                                text = buildAnnotatedString {
+                                    append(stroke.text)
+                                    append(" ")
+                                    withStyle(SpanStyle(fontStyle = FontStyle.Italic)) {
+                                        append(stroke.summary)
+                                    }
+                                },
+                                modifier = Modifier.padding(vertical = 8.dp),
+                            )
+
+//                            val myId = "inlineContent"
+//
+//                            val inlineContent = mapOf(
+//                                Pair(
+//                                    // This tells the [BasicText] to replace the placeholder string "[myBox]" by
+//                                    // the composable given in the [InlineTextContent] object.
+//                                    myId,
+//                                    InlineTextContent(
+//                                        // Placeholder tells text layout the expected size and vertical alignment of
+//                                        // children composable.
+//                                        Placeholder(
+//                                            width = 2.em,
+//                                            height = 2.em,
+//                                            placeholderVerticalAlign = PlaceholderVerticalAlign.TextTop,
+//                                        )
+//                                    ) {
+//                                        // This [Box] will fill maximum size, which is specified by the [Placeholder]
+//                                        // above. Notice the width and height in [Placeholder] are specified in TextUnit,
+//                                        // and are converted into pixel by text layout.
+//                                        HexagramSymbol(
+//                                            rawStrokes = hexagramUi.rawStrokes,
+//                                            modifier = Modifier.fillMaxSize(), //Modifier.size(32.dp),
+//                                            highlightIndex = i,
+//                                        )
+//                                        //Box(modifier = Modifier.fillMaxSize().background(color = Color.Red))
+//                                    }
+//                                )
+//                            )
+//
+//                            Text(
+//                                //text = "${stroke.text}",
+//                                modifier = Modifier.padding(vertical = 8.dp),
+//                                text = buildAnnotatedString {
+//                                    appendInlineContent(myId, "[myBox]")
+//                                    append("${stroke.text}")
+//                                },
+//                                inlineContent = inlineContent,
+//                                style = LocalTextStyle.current.copy(
+//                                    platformStyle = PlatformTextStyle(
+//                                        includeFontPadding = false
+//                                    )
+//                                )
+//                            )
+                        }
+                    } else {
+                        Row(modifier = Modifier.padding(top = 8.dp)) {
+                            HexagramSymbol(
+                                rawStrokes = hexagramUi.rawStrokes,
+                                modifier = Modifier
+                                    .padding(top = 7.dp)
+                                    .size(32.dp),
+                                highlightIndex = i,
+                            )
+
+                            Text(
+                                text = buildAnnotatedString {
+                                    append(stroke.text)
+                                    append(" ")
+                                    withStyle(SpanStyle(fontStyle = FontStyle.Italic)) {
+                                        append(stroke.summary)
+                                    }
+                                },
+                                modifier = Modifier.padding(horizontal = 8.dp),
+                            )
+                        }
+                    }
+                }
             }
         }
     }
 }
-
-private fun Hexagram.getRawStrokes() =
-    strokes.map {
-        it.solidLine
-    }
 
 @DevicePreviews
 @Composable
@@ -128,12 +211,11 @@ fun HexagramViewPreview() {
             modifier = Modifier.fillMaxSize(),
         ) {
             HexagramView(
-                hexagram = hexagram,
+                hexagramUi = hexagram.toUiState(),
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(all = 16.dp),
             )
         }
     }
-
 }

@@ -39,19 +39,22 @@ class HexagramViewModel @Inject constructor(
     val hexagramUiState: StateFlow<HexagramUiState> =
         flow {
             emit(
-                HexagramUiState(
-                    hexagram = previewHexagrams[0],
-                )
+                previewHexagrams[0].toUiState()
             )
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = HexagramUiState(
-                hexagram = previewHexagrams[0],
-            )
+            initialValue = previewHexagrams[0].toUiState(),
         )
 }
 
+fun Hexagram.toUiState(): HexagramUiState =
+    HexagramUiState(
+        hexagram = this,
+        rawStrokes = strokes.map { it.solidLine },
+    )
+
 data class HexagramUiState(
     val hexagram: Hexagram,
+    val rawStrokes: List<Boolean>,
 )
