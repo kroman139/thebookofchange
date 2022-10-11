@@ -16,11 +16,21 @@
 
 package local.kroman139.thebookofchanges.ui.home
 
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.*
+import local.kroman139.thebookofchanges.data.repository.HexagramRepository
+import local.kroman139.thebookofchanges.model.data.Hexagram
+import local.kroman139.thebookofchanges.model.data.previewHexagrams
+import local.kroman139.thebookofchanges.ui.hexagram.HexagramUiState
+import local.kroman139.thebookofchanges.ui.hexagram.toUiState
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+    hexagramRepository: HexagramRepository,
 ) : ViewModel() {
+    val hexagramList: Flow<List<Hexagram>> = hexagramRepository.getHexagramsStream()
 }

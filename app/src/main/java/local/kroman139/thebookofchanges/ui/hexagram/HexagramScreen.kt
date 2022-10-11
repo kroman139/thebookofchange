@@ -63,8 +63,7 @@ internal fun HexagramScreen(
     HexagramView(
         hexagramUi = hexagramUiState,
         modifier = Modifier
-            .fillMaxSize()
-            .padding(all = 16.dp),
+            .fillMaxSize(),
     )
 }
 
@@ -81,7 +80,8 @@ internal fun HexagramView(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState())
+                .padding(all = 16.dp)
         ) {
             Row {
                 HexagramSymbol(

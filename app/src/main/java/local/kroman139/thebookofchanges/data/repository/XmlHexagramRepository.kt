@@ -33,11 +33,60 @@ class XmlHexagramRepository @Inject constructor(
     init {
         hexagramList = emptyList<Hexagram>()
 
+        val ns: String? = null
         val parser = appContext.resources.getXml(R.xml.hexagram_list)
+        var eventType = -1
 
-        while(parser.eventType != XmlResourceParser.END_DOCUMENT) {
-            println("zzz ${parser.eventType}")
-            parser.next()
+        println("zzz 0 parser.name = ${parser.name}, eventType = $eventType")
+
+        // parser.require(XmlResourceParser.START_DOCUMENT, ns, "hexagram_list")
+        eventType = parser.next()
+        println("zzz 1 parser.name = ${parser.name}, eventType = $eventType, parser.eventType = ${parser.eventType}")
+
+        println("zzz parser.eventType = ${parser.eventType}")
+        parser.require(XmlResourceParser.START_DOCUMENT, ns, null)
+        eventType = parser.next()
+
+        // zzz 1.1 parser.name = hexagram_list, eventType = 2 (START_TAG)
+        println("zzz 1.1 parser.name = ${parser.name}, eventType = $eventType, parser.eventType = ${parser.eventType}")
+
+        parser.require(XmlResourceParser.START_TAG, ns, "hexagram_list")
+        eventType = parser.next()
+        println("zzz 2 parser.name = ${parser.name}, eventType = $eventType, parser.eventType = ${parser.eventType}")
+
+        //parser.require(XmlResourceParser.START_TAG, ns, "hexagram")
+        eventType = parser.next()
+        println("zzz 3 parser.name = ${parser.name}, eventType = $eventType, parser.eventType = ${parser.eventType}")
+
+
+        while(false && eventType != XmlResourceParser.END_DOCUMENT) {
+
+            if (eventType == XmlResourceParser.START_DOCUMENT) {
+
+                println("zzz parser.name = ${parser.name}, eventType = $eventType")
+                eventType = parser.next()
+                println("zzz parser.name = ${parser.name}, eventType = $eventType")
+                println("zzz after nextTag()")
+                parser.require(XmlResourceParser.START_TAG, ns, "hexagram_list")
+
+                eventType = parser.next()
+                println("zzz parser.name = ${parser.name}, eventType = $eventType")
+
+                parser.nextTag()
+                parser.require(XmlResourceParser.START_TAG, ns, "hexagram")
+                eventType = parser.next()
+                println("zzz parser.name = ${parser.name}, eventType = $eventType")
+
+            }
+            if ((eventType == XmlResourceParser.START_TAG) && (parser.name == "hexagram_list")) {
+                //parser.nextTag()
+                parser.require(XmlResourceParser.START_TAG, ns, "hexagram")
+                val z = parser.next()
+                println("zzz parser.name = ${parser.name}, z = $z")
+
+            }
+            eventType = parser.next()
+            println("zzz parser.next() == $eventType")
         }
     }
 
