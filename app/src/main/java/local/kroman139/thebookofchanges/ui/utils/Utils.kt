@@ -14,24 +14,17 @@
  *   limitations under the License.
  */
 
-package local.kroman139.thebookofchanges.data.di
+package local.kroman139.thebookofchanges.ui.utils
 
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
-import local.kroman139.thebookofchanges.data.repository.HexagramRepository
-import local.kroman139.thebookofchanges.data.repository.XmlHexagramRepository
-import javax.inject.Singleton
+import local.kroman139.thebookofchanges.model.data.Hexagram
 
-@Module
-@InstallIn(SingletonComponent::class)
-interface DataModule {
+data class HexagramUiState(
+    val hexagram: Hexagram,
+    val rawStrokes: List<Boolean>,
+)
 
-    @Singleton
-    @Binds
-    fun bindsHexagramRepository(
-        hexagramRepository: XmlHexagramRepository
-    ): HexagramRepository
-
-}
+fun Hexagram.toUiState(): HexagramUiState =
+    HexagramUiState(
+        hexagram = this,
+        rawStrokes = strokes.map { it.solidLine },
+    )

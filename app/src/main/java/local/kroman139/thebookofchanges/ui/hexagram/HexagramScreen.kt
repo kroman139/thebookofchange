@@ -38,6 +38,8 @@ import local.kroman139.thebookofchanges.designsystem.component.DevicePreviews
 import local.kroman139.thebookofchanges.designsystem.component.HexagramSymbol
 import local.kroman139.thebookofchanges.designsystem.theme.TbocTheme
 import local.kroman139.thebookofchanges.model.data.previewHexagrams
+import local.kroman139.thebookofchanges.ui.utils.HexagramUiState
+import local.kroman139.thebookofchanges.ui.utils.toUiState
 
 @Composable
 fun HexagramRoute(

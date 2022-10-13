@@ -16,21 +16,26 @@
 
 package local.kroman139.thebookofchanges.ui.home
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import local.kroman139.thebookofchanges.designsystem.component.DevicePreviews
 import local.kroman139.thebookofchanges.designsystem.component.DummyButton
 import local.kroman139.thebookofchanges.designsystem.component.DummyText
+import local.kroman139.thebookofchanges.designsystem.component.HexagramSymbol
 import local.kroman139.thebookofchanges.designsystem.theme.TbocTheme
-import local.kroman139.thebookofchanges.model.data.Hexagram
 import local.kroman139.thebookofchanges.model.data.previewHexagrams
+import local.kroman139.thebookofchanges.ui.utils.HexagramUiState
+import local.kroman139.thebookofchanges.ui.utils.toUiState
 
 @Composable
 fun HomeRoute(
@@ -38,10 +43,10 @@ fun HomeRoute(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
-    val hexagramList by viewModel.hexagramList.collectAsState(initial = emptyList())
+    val hexagramListUiState by viewModel.hexagramListUiState.collectAsState(initial = emptyList())
 
     HomeScreen(
-        hexagramList = hexagramList,
+        hexagramListUiState = hexagramListUiState,
         navigateToHexagram = navigateToHexagram,
         modifier = modifier,
     )
@@ -49,7 +54,7 @@ fun HomeRoute(
 
 @Composable
 fun HomeScreen(
-    hexagramList: List<Hexagram>,
+    hexagramListUiState: List<HexagramUiState>,
     navigateToHexagram: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -65,11 +70,26 @@ fun HomeScreen(
             onClick = { navigateToHexagram("1") }
         )
 
-        hexagramList.forEach {
-            DummyButton(
-                text = "open hexagram ${it.id}",
-                onClick = { navigateToHexagram(it.id) }
-            )
+        hexagramListUiState.forEach {
+            Row(
+                modifier = Modifier,
+                verticalAlignment = CenterVertically,
+            ) {
+                HexagramSymbol(
+                    rawStrokes = it.rawStrokes,
+                    modifier = Modifier.size(32.dp),
+                )
+                DummyButton(
+                    text = "${it.hexagram.id}, ${it.hexagram.title}",
+                    modifier = Modifier.padding(start = 8.dp),
+                    onClick = { navigateToHexagram(it.hexagram.id) }
+                )
+                Text(
+                    text = "${it.hexagram.logogram}",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(start = 8.dp),
+                )
+            }
         }
     }
 }
@@ -82,7 +102,7 @@ fun HomeScreenPreview() {
             modifier = Modifier.fillMaxSize(),
         ) {
             HomeScreen(
-                hexagramList = previewHexagrams,
+                hexagramListUiState = previewHexagrams.map { it.toUiState() },
                 navigateToHexagram = { _ -> },
             )
         }

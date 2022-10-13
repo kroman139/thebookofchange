@@ -28,11 +28,17 @@ object HexagramDestination : TbocNavigationDestination {
 
     fun createNavigationRoute(hexagramIdArg: String): String {
         val encodedId = Uri.encode(hexagramIdArg)
+
+        println("navigate to $encodedId")
+
         return "hexagram_route/$encodedId"
     }
 
     fun fromNavArgs(entry: NavBackStackEntry): String {
         val encodedId = entry.arguments?.getString(hexagramIdArg)!!
+
+        println("navigate from $encodedId")
+
         return Uri.decode(encodedId)
     }
 }

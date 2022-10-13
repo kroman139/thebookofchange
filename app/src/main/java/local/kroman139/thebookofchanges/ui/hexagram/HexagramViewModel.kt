@@ -16,18 +16,18 @@
 
 package local.kroman139.thebookofchanges.ui.hexagram
 
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import local.kroman139.thebookofchanges.data.repository.HexagramRepository
 import local.kroman139.thebookofchanges.model.data.Hexagram
 import local.kroman139.thebookofchanges.model.data.previewHexagrams
 import local.kroman139.thebookofchanges.ui.hexagram.navigation.HexagramDestination
+import local.kroman139.thebookofchanges.ui.utils.HexagramUiState
+import local.kroman139.thebookofchanges.ui.utils.toUiState
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,10 +38,15 @@ class HexagramViewModel @Inject constructor(
     private val hexagramId: String =
         checkNotNull(savedStateHandle[HexagramDestination.hexagramIdArg])
 
+    private val hexagramStream = hexagramRepository.getHexagramsStream()
+
     val hexagramUiState: StateFlow<HexagramUiState> =
         flow {
             emit(
-                previewHexagrams[0].toUiState()
+                hexagramStream
+                    .first()
+                    .first { it.id == hexagramId }
+                    .toUiState()
             )
         }.stateIn(
             scope = viewModelScope,
@@ -49,14 +54,3 @@ class HexagramViewModel @Inject constructor(
             initialValue = previewHexagrams[0].toUiState(),
         )
 }
-
-fun Hexagram.toUiState(): HexagramUiState =
-    HexagramUiState(
-        hexagram = this,
-        rawStrokes = strokes.map { it.solidLine },
-    )
-
-data class HexagramUiState(
-    val hexagram: Hexagram,
-    val rawStrokes: List<Boolean>,
-)
