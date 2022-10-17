@@ -20,9 +20,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -56,22 +56,58 @@ fun HexagramRoute(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun HexagramScreen(
     hexagramUiState: HexagramUiState,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    HexagramView(
-        hexagramUi = hexagramUiState,
-        modifier = Modifier
-            .fillMaxSize(),
-    )
+    if (hexagramUiState.hexagram.id.toInt() % 2 == 0) {
+        HexagramView(
+            hexagramUi = hexagramUiState,
+            onBackClick = onBackClick,
+            modifier = modifier
+                .fillMaxSize(),
+        )
+
+    } else {
+
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(text = "${hexagramUiState.hexagram.title}")
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = onBackClick) {
+                            Icon(Icons.Filled.ArrowBack, "backIcon")
+                        }
+                    },
+                    //backgroundColor = MaterialTheme.colors.primary,
+                    //contentColor = Color.White,
+                    // elevation = 10.dp
+                    colors = TopAppBarDefaults.largeTopAppBarColors(),
+                )
+            },
+            modifier = modifier,
+        ) { innerPadding ->
+
+            HexagramView(
+                hexagramUi = hexagramUiState,
+                onBackClick = onBackClick,
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(),
+            )
+        }
+    }
 }
 
 @Composable
 internal fun HexagramView(
     hexagramUi: HexagramUiState,
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val hexagram = hexagramUi.hexagram
@@ -83,9 +119,15 @@ internal fun HexagramView(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(all = 16.dp)
+                .padding(all = 16.dp),
         ) {
             Row {
+                IconButton(
+                    onClick = onBackClick,
+                ) {
+                    Icon(Icons.Filled.ArrowBack, "backIcon")
+                }
+
                 HexagramSymbol(
                     rawStrokes = hexagramUi.rawStrokes,
                     modifier = Modifier.size(32.dp),
@@ -214,6 +256,7 @@ fun HexagramViewPreview() {
         ) {
             HexagramView(
                 hexagramUi = hexagram.toUiState(),
+                onBackClick = { },
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(all = 16.dp),
