@@ -17,6 +17,8 @@
 package local.kroman139.thebookofchanges.ui.home
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -60,16 +62,10 @@ fun HomeScreen(
 ) {
     Column(
         modifier = modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        DummyText(text = "Home screen, 乾, ䷀")
-
-        DummyButton(
-            text = "open hexagram",
-            onClick = { navigateToHexagram("1") }
-        )
-
         hexagramListUiState.forEach {
             Row(
                 modifier = Modifier,
@@ -78,6 +74,11 @@ fun HomeScreen(
                 HexagramSymbol(
                     rawStrokes = it.rawStrokes,
                     modifier = Modifier.size(32.dp),
+                )
+                Text(
+                    text = "${it.hexagram.symbol}",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(start = 8.dp),
                 )
                 DummyButton(
                     text = "${it.hexagram.id}, ${it.hexagram.title}",
