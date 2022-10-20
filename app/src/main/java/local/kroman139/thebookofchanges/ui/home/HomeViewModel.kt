@@ -17,10 +17,29 @@
 package local.kroman139.thebookofchanges.ui.home
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.*
+import local.kroman139.thebookofchanges.data.repository.HexagramRepository
+import local.kroman139.thebookofchanges.model.data.Hexagram
+import local.kroman139.thebookofchanges.model.data.previewHexagrams
+import local.kroman139.thebookofchanges.ui.utils.HexagramUiState
+import local.kroman139.thebookofchanges.ui.utils.toUiState
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+    hexagramRepository: HexagramRepository,
 ) : ViewModel() {
+    val hexagramListUiState =
+        hexagramRepository.getHexagramsStream().map {
+            it.map {
+                it.toUiState()
+            }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = emptyList<HexagramUiState>(),
+        )
+
 }
