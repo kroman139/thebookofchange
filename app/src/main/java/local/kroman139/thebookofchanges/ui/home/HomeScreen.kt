@@ -16,6 +16,7 @@
 
 package local.kroman139.thebookofchanges.ui.home
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -25,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -38,6 +40,7 @@ import local.kroman139.thebookofchanges.designsystem.theme.TbocTheme
 import local.kroman139.thebookofchanges.model.data.previewHexagrams
 import local.kroman139.thebookofchanges.ui.utils.HexagramUiState
 import local.kroman139.thebookofchanges.ui.utils.toUiState
+import androidx.compose.runtime.getValue
 
 @Composable
 fun HomeRoute(
@@ -45,7 +48,7 @@ fun HomeRoute(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
-    val hexagramListUiState by viewModel.hexagramListUiState.collectAsState(initial = emptyList())
+    val hexagramListUiState by viewModel.hexagramListUiState.collectAsState()
 
     HomeScreen(
         hexagramListUiState = hexagramListUiState,
@@ -81,7 +84,7 @@ fun HomeScreen(
                     modifier = Modifier.padding(start = 8.dp),
                 )
                 DummyButton(
-                    text = "${it.hexagram.id}, ${it.hexagram.title}",
+                    text = "${it.hexagram.id}. ${it.hexagram.title}",
                     modifier = Modifier.padding(start = 8.dp),
                     onClick = { navigateToHexagram(it.hexagram.id) }
                 )

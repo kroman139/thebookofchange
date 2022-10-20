@@ -128,14 +128,15 @@ internal fun HexagramView(
                     Icon(Icons.Filled.ArrowBack, "backIcon")
                 }
 
+                Text(
+                    text = "${hexagram.id}. ${hexagram.logogram} ${hexagram.title}",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(start = 16.dp),
+                )
+
                 HexagramSymbol(
                     rawStrokes = hexagramUi.rawStrokes,
                     modifier = Modifier.size(32.dp),
-                )
-                Text(
-                    text = "${hexagram.logogram}   ${hexagram.title}",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(start = 16.dp),
                 )
             }
 
