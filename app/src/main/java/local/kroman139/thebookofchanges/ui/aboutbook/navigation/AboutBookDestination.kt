@@ -14,23 +14,11 @@
  *   limitations under the License.
  */
 
-package local.kroman139.thebookofchanges.designsystem.component
+package local.kroman139.thebookofchanges.ui.aboutbook.navigation
 
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
+import local.kroman139.thebookofchanges.navigation.TbocNavigationDestination
 
-@Composable
-fun DummyText(
-    text: String,
-    modifier: Modifier = Modifier,
-    style: TextStyle = LocalTextStyle.current
-) {
-    Text(
-        text = text,
-        style = style,
-        modifier = modifier,
-    )
+object AboutBookDestination : TbocNavigationDestination {
+    override val route = "about_book_route"
+    override val destination = "about_book_destination"
 }

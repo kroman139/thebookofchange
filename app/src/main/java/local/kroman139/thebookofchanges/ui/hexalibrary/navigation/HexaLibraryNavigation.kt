@@ -14,23 +14,11 @@
  *   limitations under the License.
  */
 
-package local.kroman139.thebookofchanges.designsystem.component
+package local.kroman139.thebookofchanges.ui.hexalibrary.navigation
 
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
+import local.kroman139.thebookofchanges.navigation.TbocNavigationDestination
 
-@Composable
-fun DummyText(
-    text: String,
-    modifier: Modifier = Modifier,
-    style: TextStyle = LocalTextStyle.current
-) {
-    Text(
-        text = text,
-        style = style,
-        modifier = modifier,
-    )
+object HexaLibraryDestination : TbocNavigationDestination {
+    override val route = "hexa_library_route"
+    override val destination = "hexa_library_destination"
 }

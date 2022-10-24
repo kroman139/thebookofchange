@@ -14,23 +14,15 @@
  *   limitations under the License.
  */
 
-package local.kroman139.thebookofchanges.designsystem.component
+package local.kroman139.thebookofchanges.ui.answerslist
 
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
+import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import local.kroman139.thebookofchanges.data.repository.HexagramRepository
+import javax.inject.Inject
 
-@Composable
-fun DummyText(
-    text: String,
-    modifier: Modifier = Modifier,
-    style: TextStyle = LocalTextStyle.current
-) {
-    Text(
-        text = text,
-        style = style,
-        modifier = modifier,
-    )
+@HiltViewModel
+class AnswersListViewModel @Inject constructor(
+    dummy_hexagramRepository: HexagramRepository, // TODO: remove this argument
+) : ViewModel() {
 }

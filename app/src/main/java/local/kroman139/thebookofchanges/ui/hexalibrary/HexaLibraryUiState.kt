@@ -14,23 +14,20 @@
  *   limitations under the License.
  */
 
-package local.kroman139.thebookofchanges.designsystem.component
+package local.kroman139.thebookofchanges.ui.hexalibrary
 
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
+import local.kroman139.thebookofchanges.ui.utils.HexagramUiState
 
-@Composable
-fun DummyText(
-    text: String,
-    modifier: Modifier = Modifier,
-    style: TextStyle = LocalTextStyle.current
-) {
-    Text(
-        text = text,
-        style = style,
-        modifier = modifier,
-    )
+enum class ViewMode {
+    COMPACT,
+    LIST,
+}
+
+sealed interface HexaLibraryUiState {
+    data class Library(
+        val viewMode: ViewMode,
+        val hexaList: List<HexagramUiState.Ok>,
+    ) : HexaLibraryUiState
+
+    object Empty : HexaLibraryUiState
 }

@@ -16,21 +16,22 @@
 
 package local.kroman139.thebookofchanges.designsystem.component
 
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
 
 @Composable
-fun DummyText(
-    text: String,
+fun TbocBackButton(
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    style: TextStyle = LocalTextStyle.current
 ) {
-    Text(
-        text = text,
-        style = style,
+    IconButton(
+        onClick = onClick,
         modifier = modifier,
-    )
+    ) {
+        Icon(Icons.Filled.ArrowBack, "back")
+    }
 }

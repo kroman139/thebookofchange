@@ -14,39 +14,24 @@
  *   limitations under the License.
  */
 
-package local.kroman139.thebookofchanges.ui.hexagram
+package local.kroman139.thebookofchanges.ui.answer
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
 import local.kroman139.thebookofchanges.data.repository.HexagramRepository
+import local.kroman139.thebookofchanges.ui.answer.navigation.AnswerDestination
 import local.kroman139.thebookofchanges.ui.hexagram.navigation.HexagramDestination
-import local.kroman139.thebookofchanges.ui.utils.HexagramUiState
-import local.kroman139.thebookofchanges.ui.utils.toUiStateOk
 import javax.inject.Inject
 
 @HiltViewModel
-class HexagramViewModel @Inject constructor(
+class AnswerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     hexagramRepository: HexagramRepository,
 ) : ViewModel() {
-    private val hexagramId: String =
-        checkNotNull(savedStateHandle[HexagramDestination.hexagramIdArg])
+    private val questionId: String =
+        checkNotNull(savedStateHandle[AnswerDestination.questionIdArg])
 
-    val hexagramUiState: StateFlow<HexagramUiState> =
-        flow {
-            emit(
-                hexagramRepository
-                    .getHexagramsStream()
-                    .first()
-                    .first { it.id == hexagramId }
-                    .toUiStateOk()
-            )
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = HexagramUiState.Empty,
-        )
+    val dummyQuestionIdStream = MutableStateFlow(questionId)
 }

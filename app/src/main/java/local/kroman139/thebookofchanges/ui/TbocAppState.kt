@@ -56,9 +56,19 @@ class TbocAppState(
                 windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact
 
     fun navigate(destination: TbocNavigationDestination, route: String? = null) {
-        Log.d("AppState", "Navigation: destination = $destination, route = $route")
+        Log.d("AppState", "navigate: destination = $destination, route = $route")
 
         navController.navigate(route ?: destination.route)
+    }
+
+    fun navigateFromHome(destination: TbocNavigationDestination, route: String? = null) {
+        Log.d("AppState", "navigateFromHome: destination = $destination, route = $route")
+
+        navController.navigate(route ?: destination.route) {
+            popUpTo(navController.graph.findStartDestination().id) {
+                saveState = true
+            }
+        }
     }
 
     fun onBackClick() {

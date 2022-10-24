@@ -14,39 +14,44 @@
  *   limitations under the License.
  */
 
-package local.kroman139.thebookofchanges.ui.hexagram
+package local.kroman139.thebookofchanges.ui.hexalibrary
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import local.kroman139.thebookofchanges.data.repository.HexagramRepository
-import local.kroman139.thebookofchanges.ui.hexagram.navigation.HexagramDestination
-import local.kroman139.thebookofchanges.ui.utils.HexagramUiState
 import local.kroman139.thebookofchanges.ui.utils.toUiStateOk
 import javax.inject.Inject
 
+// Technique 1: save "viewMode" inside ViewModel.
+// Reason: to show "combine" in action.
+
 @HiltViewModel
-class HexagramViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+class HexaLibraryViewModel @Inject constructor(
     hexagramRepository: HexagramRepository,
 ) : ViewModel() {
-    private val hexagramId: String =
-        checkNotNull(savedStateHandle[HexagramDestination.hexagramIdArg])
 
-    val hexagramUiState: StateFlow<HexagramUiState> =
-        flow {
-            emit(
-                hexagramRepository
-                    .getHexagramsStream()
-                    .first()
-                    .first { it.id == hexagramId }
-                    .toUiStateOk()
-            )
-        }.stateIn(
+    private val _viewMode = MutableStateFlow(ViewMode.COMPACT)
+
+    val hexaLibraryUiState = combine(
+        _viewMode,
+        hexagramRepository.getHexagramsStream()
+    ) { mode, list ->
+        HexaLibraryUiState.Library(
+            viewMode = mode,
+            hexaList = list.map { it.toUiStateOk() },
+        )
+    }
+        .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = HexagramUiState.Empty,
+            initialValue = HexaLibraryUiState.Empty
         )
+
+    fun switchViewMode(viewMode: ViewMode) {
+        if (viewMode != _viewMode.value) {
+            _viewMode.update { viewMode }
+        }
+    }
 }

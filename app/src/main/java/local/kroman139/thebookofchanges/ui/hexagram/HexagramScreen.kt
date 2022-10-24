@@ -20,8 +20,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -35,11 +33,13 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import local.kroman139.thebookofchanges.designsystem.component.DevicePreviews
-import local.kroman139.thebookofchanges.designsystem.component.HexagramSymbol
+import local.kroman139.thebookofchanges.designsystem.component.TbocHexagramSymbol
+import local.kroman139.thebookofchanges.designsystem.component.TbocBackButton
 import local.kroman139.thebookofchanges.designsystem.theme.TbocTheme
+import local.kroman139.thebookofchanges.model.data.HexagramStroke
 import local.kroman139.thebookofchanges.model.data.previewHexagrams
 import local.kroman139.thebookofchanges.ui.utils.HexagramUiState
-import local.kroman139.thebookofchanges.ui.utils.toUiState
+import local.kroman139.thebookofchanges.ui.utils.toUiStateOk
 
 @Composable
 fun HexagramRoute(
@@ -50,7 +50,7 @@ fun HexagramRoute(
     val uiState: HexagramUiState by viewModel.hexagramUiState.collectAsState()
 
     HexagramScreen(
-        hexagramUiState = uiState,
+        uiState = uiState,
         onBackClick = onBackClick,
         modifier = modifier,
     )
@@ -59,58 +59,32 @@ fun HexagramRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun HexagramScreen(
-    hexagramUiState: HexagramUiState,
+    uiState: HexagramUiState,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (hexagramUiState.hexagram.id.toInt() % 2 == 0) {
-        HexagramView(
-            hexagramUi = hexagramUiState,
-            onBackClick = onBackClick,
-            modifier = modifier
-                .fillMaxSize(),
-        )
-
-    } else {
-
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = {
-                        Text(text = "${hexagramUiState.hexagram.title}")
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = onBackClick) {
-                            Icon(Icons.Filled.ArrowBack, "backIcon")
-                        }
-                    },
-                    //backgroundColor = MaterialTheme.colors.primary,
-                    //contentColor = Color.White,
-                    // elevation = 10.dp
-                    colors = TopAppBarDefaults.largeTopAppBarColors(),
-                )
-            },
-            modifier = modifier,
-        ) { innerPadding ->
-
+    when(uiState) {
+        is HexagramUiState.Ok -> {
             HexagramView(
-                hexagramUi = hexagramUiState,
+                hexagramUiOk = uiState,
                 onBackClick = onBackClick,
-                modifier = Modifier
-                    .padding(innerPadding)
+                modifier = modifier
                     .fillMaxSize(),
             )
+        }
+        else -> {
+            // TODO: show empty screen or something else?
         }
     }
 }
 
 @Composable
 internal fun HexagramView(
-    hexagramUi: HexagramUiState,
+    hexagramUiOk: HexagramUiState.Ok,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val hexagram = hexagramUi.hexagram
+    val hexagram = hexagramUiOk.hexagram
 
     Surface(
         modifier = modifier.background(color = Color.Gray),
@@ -122,11 +96,9 @@ internal fun HexagramView(
                 .padding(all = 16.dp),
         ) {
             Row {
-                IconButton(
+                TbocBackButton(
                     onClick = onBackClick,
-                ) {
-                    Icon(Icons.Filled.ArrowBack, "backIcon")
-                }
+                )
 
                 Text(
                     text = "${hexagram.id}. ${hexagram.logogram} ${hexagram.title}",
@@ -134,8 +106,8 @@ internal fun HexagramView(
                     modifier = Modifier.padding(start = 16.dp),
                 )
 
-                HexagramSymbol(
-                    rawStrokes = hexagramUi.rawStrokes,
+                TbocHexagramSymbol(
+                    rawStrokes = hexagramUiOk.rawStrokes,
                     modifier = Modifier.size(32.dp),
                 )
             }
@@ -154,95 +126,69 @@ internal fun HexagramView(
             hexagram.strokes.forEachIndexed { i, stroke ->
                 BoxWithConstraints {
                     if (maxWidth < 380.dp) {
-                        Column {
-                            HexagramSymbol(
-                                rawStrokes = hexagramUi.rawStrokes,
-                                modifier = Modifier
-                                    .padding(top = 8.dp)
-                                    .size(32.dp),
-                                highlightIndex = i,
-                            )
-
-                            Text(
-                                text = buildAnnotatedString {
-                                    append(stroke.text)
-                                    append(" ")
-                                    withStyle(SpanStyle(fontStyle = FontStyle.Italic)) {
-                                        append(stroke.summary)
-                                    }
-                                },
-                                modifier = Modifier.padding(vertical = 8.dp),
-                            )
-
-//                            val myId = "inlineContent"
-//
-//                            val inlineContent = mapOf(
-//                                Pair(
-//                                    // This tells the [BasicText] to replace the placeholder string "[myBox]" by
-//                                    // the composable given in the [InlineTextContent] object.
-//                                    myId,
-//                                    InlineTextContent(
-//                                        // Placeholder tells text layout the expected size and vertical alignment of
-//                                        // children composable.
-//                                        Placeholder(
-//                                            width = 2.em,
-//                                            height = 2.em,
-//                                            placeholderVerticalAlign = PlaceholderVerticalAlign.TextTop,
-//                                        )
-//                                    ) {
-//                                        // This [Box] will fill maximum size, which is specified by the [Placeholder]
-//                                        // above. Notice the width and height in [Placeholder] are specified in TextUnit,
-//                                        // and are converted into pixel by text layout.
-//                                        HexagramSymbol(
-//                                            rawStrokes = hexagramUi.rawStrokes,
-//                                            modifier = Modifier.fillMaxSize(), //Modifier.size(32.dp),
-//                                            highlightIndex = i,
-//                                        )
-//                                        //Box(modifier = Modifier.fillMaxSize().background(color = Color.Red))
-//                                    }
-//                                )
-//                            )
-//
-//                            Text(
-//                                //text = "${stroke.text}",
-//                                modifier = Modifier.padding(vertical = 8.dp),
-//                                text = buildAnnotatedString {
-//                                    appendInlineContent(myId, "[myBox]")
-//                                    append("${stroke.text}")
-//                                },
-//                                inlineContent = inlineContent,
-//                                style = LocalTextStyle.current.copy(
-//                                    platformStyle = PlatformTextStyle(
-//                                        includeFontPadding = false
-//                                    )
-//                                )
-//                            )
-                        }
+                        NarrowStrokeView(hexagramUiOk, i, stroke)
                     } else {
-                        Row(modifier = Modifier.padding(top = 8.dp)) {
-                            HexagramSymbol(
-                                rawStrokes = hexagramUi.rawStrokes,
-                                modifier = Modifier
-                                    .padding(top = 7.dp)
-                                    .size(32.dp),
-                                highlightIndex = i,
-                            )
-
-                            Text(
-                                text = buildAnnotatedString {
-                                    append(stroke.text)
-                                    append(" ")
-                                    withStyle(SpanStyle(fontStyle = FontStyle.Italic)) {
-                                        append(stroke.summary)
-                                    }
-                                },
-                                modifier = Modifier.padding(horizontal = 8.dp),
-                            )
-                        }
+                        WideStrokeView(hexagramUiOk, i, stroke)
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun NarrowStrokeView(
+    hexagramUiOk: HexagramUiState.Ok,
+    idx: Int,
+    stroke: HexagramStroke
+) {
+    Column {
+        TbocHexagramSymbol(
+            rawStrokes = hexagramUiOk.rawStrokes,
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .size(32.dp),
+            highlightIndex = idx,
+        )
+
+        Text(
+            text = buildAnnotatedString {
+                append(stroke.text)
+                append(" ")
+                withStyle(SpanStyle(fontStyle = FontStyle.Italic)) {
+                    append(stroke.summary)
+                }
+            },
+            modifier = Modifier.padding(vertical = 8.dp),
+        )
+    }
+}
+
+@Composable
+private fun WideStrokeView(
+    hexagramUiOk: HexagramUiState.Ok,
+    idx: Int,
+    stroke: HexagramStroke
+) {
+    Row(modifier = Modifier.padding(top = 8.dp)) {
+        TbocHexagramSymbol(
+            rawStrokes = hexagramUiOk.rawStrokes,
+            modifier = Modifier
+                .padding(top = 7.dp)
+                .size(32.dp),
+            highlightIndex = idx,
+        )
+
+        Text(
+            text = buildAnnotatedString {
+                append(stroke.text)
+                append(" ")
+                withStyle(SpanStyle(fontStyle = FontStyle.Italic)) {
+                    append(stroke.summary)
+                }
+            },
+            modifier = Modifier.padding(horizontal = 8.dp),
+        )
     }
 }
 
@@ -256,7 +202,7 @@ fun HexagramViewPreview() {
             modifier = Modifier.fillMaxSize(),
         ) {
             HexagramView(
-                hexagramUi = hexagram.toUiState(),
+                hexagramUiOk = hexagram.toUiStateOk(),
                 onBackClick = { },
                 modifier = Modifier
                     .fillMaxSize()

@@ -18,13 +18,17 @@ package local.kroman139.thebookofchanges.ui.utils
 
 import local.kroman139.thebookofchanges.model.data.Hexagram
 
-data class HexagramUiState(
-    val hexagram: Hexagram,
-    val rawStrokes: List<Boolean>,
-)
+sealed interface HexagramUiState {
+    data class Ok(
+        val hexagram: Hexagram,
+        val rawStrokes: List<Boolean>,
+    ) : HexagramUiState
 
-fun Hexagram.toUiState(): HexagramUiState =
-    HexagramUiState(
+    object Empty : HexagramUiState
+}
+
+fun Hexagram.toUiStateOk(): HexagramUiState.Ok =
+    HexagramUiState.Ok(
         hexagram = this,
         rawStrokes = strokes.map { it.solidLine },
     )

@@ -14,32 +14,31 @@
  *   limitations under the License.
  */
 
-package local.kroman139.thebookofchanges.ui.home
+package local.kroman139.thebookofchanges.ui.askquestion
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import local.kroman139.thebookofchanges.data.repository.HexagramRepository
-import local.kroman139.thebookofchanges.ui.utils.HexagramUiState
-import local.kroman139.thebookofchanges.ui.utils.toUiStateOk
 import javax.inject.Inject
+import kotlin.random.Random
+import kotlin.random.nextUInt
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(
+class AskQuestionViewModel @Inject constructor(
     hexagramRepository: HexagramRepository,
 ) : ViewModel() {
-    val hexagramListUiState =
-        hexagramRepository.getHexagramsStream()
-            .map { list ->
-                list.map {
-                    it.toUiStateOk()
-                }
-            }.stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = emptyList<HexagramUiState.Ok>(),
-            )
+
+    fun storeRandomAnswer(
+        navigateToAnswer: (String) -> Unit,
+    ) {
+        viewModelScope.launch {
+            val hexaId = Random.nextUInt(1U..64U).toString()
+            // store "question - answer"
+
+            navigateToAnswer(hexaId)
+        }
+    }
 }

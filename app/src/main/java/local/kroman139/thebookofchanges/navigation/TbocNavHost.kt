@@ -19,20 +19,28 @@ package local.kroman139.thebookofchanges.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
+import local.kroman139.thebookofchanges.ui.aboutbook.AboutBookRoute
+import local.kroman139.thebookofchanges.ui.aboutbook.navigation.AboutBookDestination
+import local.kroman139.thebookofchanges.ui.answer.AnswerRoute
+import local.kroman139.thebookofchanges.ui.answer.navigation.AnswerDestination
+import local.kroman139.thebookofchanges.ui.answerslist.AnswersListRoute
+import local.kroman139.thebookofchanges.ui.answerslist.navigation.AnswersListDestination
+import local.kroman139.thebookofchanges.ui.askquestion.AskQuestionRoute
+import local.kroman139.thebookofchanges.ui.askquestion.navigation.AskQuestionDestination
 import local.kroman139.thebookofchanges.ui.hexagram.HexagramRoute
 import local.kroman139.thebookofchanges.ui.hexagram.navigation.HexagramDestination
+import local.kroman139.thebookofchanges.ui.hexalibrary.HexaLibraryRoute
+import local.kroman139.thebookofchanges.ui.hexalibrary.navigation.HexaLibraryDestination
 import local.kroman139.thebookofchanges.ui.home.HomeRoute
 import local.kroman139.thebookofchanges.ui.home.navigation.HomeDestination
-import local.kroman139.thebookofchanges.ui.home.navigation.homeGraph
 
 @Composable
 fun TbocNavHost(
     navController: NavHostController,
-    onNavigateToDestination: (TbocNavigationDestination, String) -> Unit,
+    navigate: (TbocNavigationDestination, String) -> Unit,
+    navigateFromHome: (TbocNavigationDestination, String) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     startDestination: String = HomeDestination.route,
@@ -42,29 +50,60 @@ fun TbocNavHost(
         startDestination = startDestination,
         modifier = modifier,
     ) {
-        homeGraph(
-            navigateToHexagram = {
-                onNavigateToDestination(
-                    HexagramDestination, HexagramDestination.createNavigationRoute(it)
-                )
-            }
-        )
         composable(route = HomeDestination.route) {
             HomeRoute(
+                openLibrary = { navigate(HexaLibraryDestination, HexaLibraryDestination.route) },
+                askQuestion = { navigate(AskQuestionDestination, AskQuestionDestination.route) },
+                showAnswers = { navigate(AnswersListDestination, AnswersListDestination.route) },
+                aboutBook = { navigate(AboutBookDestination, AboutBookDestination.route) },
+            )
+        }
+        composable(route = HexaLibraryDestination.route) {
+            HexaLibraryRoute(
+                onBackClick = onBackClick,
                 navigateToHexagram = {
-                    onNavigateToDestination(
-                        HexagramDestination, HexagramDestination.createNavigationRoute(it)
-                    )
+                    navigate(HexagramDestination, HexagramDestination.createNavigationRoute(it))
                 }
+            )
+        }
+        composable(route = AskQuestionDestination.route) {
+            AskQuestionRoute(
+                onBackClick = onBackClick,
+                openAnswer = {
+                    navigateFromHome(AnswerDestination, AnswerDestination.createNavigationRoute(it))
+                }
+            )
+        }
+        composable(route = AnswersListDestination.route) {
+            AnswersListRoute(
+                onBackClick = onBackClick,
+                openAnswer = {
+                    navigate(AnswerDestination, AnswerDestination.createNavigationRoute(it))
+                },
+            )
+        }
+        composable(
+            route = AnswerDestination.route,
+            arguments = listOf(
+                AnswerDestination.questionIdNavArgument()
+            )
+        ) {
+            AnswerRoute(
+                onBackClick = onBackClick
             )
         }
         composable(
             route = HexagramDestination.route,
             arguments = listOf(
-                navArgument(HexagramDestination.hexagramIdArg) { type = NavType.StringType }
+                HexagramDestination.hexagramIdNavArgument()
             )
         ) {
             HexagramRoute(
+                onBackClick = onBackClick
+            )
+        }
+        composable(route = AboutBookDestination.route) {
+            AboutBookRoute(
                 onBackClick = onBackClick
             )
         }

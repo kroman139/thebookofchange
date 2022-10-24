@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -34,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import local.kroman139.thebookofchanges.designsystem.theme.TbocTheme
 
 @Composable
-fun HexagramSymbol(
+fun TbocHexagramSymbol(
     rawStrokes: List<Boolean>,
     modifier: Modifier = Modifier,
     color: Color = Color.Unspecified,
@@ -106,7 +105,7 @@ fun HexagramSymbolPreview() {
         Surface(
             modifier = Modifier,
         ) {
-            HexagramSymbol(
+            TbocHexagramSymbol(
                 rawStrokes = listOf(true, false, true, false, false, true),
                 modifier = Modifier
                     .padding(all = 16.dp)
@@ -123,7 +122,7 @@ fun HexagramSymbolPreview2() {
         Surface(
             modifier = Modifier,
         ) {
-            HexagramSymbol(
+            TbocHexagramSymbol(
                 rawStrokes = listOf(true, false, true, false, false, true),
                 modifier = Modifier
                     .padding(all = 16.dp)

@@ -57,7 +57,8 @@ fun TbocApp(
                     TbocNavHost(
                         navController = appState.navController,
                         onBackClick = appState::onBackClick,
-                        onNavigateToDestination = appState::navigate,
+                        navigate = appState::navigate,
+                        navigateFromHome = appState::navigateFromHome,
                         modifier = Modifier
                             .padding(padding)
                             .consumedWindowInsets(padding)

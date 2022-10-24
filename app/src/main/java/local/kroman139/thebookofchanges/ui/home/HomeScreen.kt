@@ -16,51 +16,52 @@
 
 package local.kroman139.thebookofchanges.ui.home
 
-import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import local.kroman139.thebookofchanges.designsystem.component.DevicePreviews
-import local.kroman139.thebookofchanges.designsystem.component.DummyButton
-import local.kroman139.thebookofchanges.designsystem.component.DummyText
-import local.kroman139.thebookofchanges.designsystem.component.HexagramSymbol
+import local.kroman139.thebookofchanges.designsystem.component.TbocDummyButton
 import local.kroman139.thebookofchanges.designsystem.theme.TbocTheme
 import local.kroman139.thebookofchanges.model.data.previewHexagrams
 import local.kroman139.thebookofchanges.ui.utils.HexagramUiState
-import local.kroman139.thebookofchanges.ui.utils.toUiState
-import androidx.compose.runtime.getValue
+import local.kroman139.thebookofchanges.ui.utils.toUiStateOk
 
 @Composable
 fun HomeRoute(
-    navigateToHexagram: (String) -> Unit,
+    openLibrary: () -> Unit,
+    askQuestion: () -> Unit,
+    showAnswers: () -> Unit,
+    aboutBook: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val hexagramListUiState by viewModel.hexagramListUiState.collectAsState()
 
     HomeScreen(
-        hexagramListUiState = hexagramListUiState,
-        navigateToHexagram = navigateToHexagram,
+        hexagramListUiStateOk = hexagramListUiState,
+        openLibrary = openLibrary,
+        askQuestion = askQuestion,
+        showAnswers = showAnswers,
+        aboutBook = aboutBook,
         modifier = modifier,
     )
 }
 
 @Composable
 fun HomeScreen(
-    hexagramListUiState: List<HexagramUiState>,
-    navigateToHexagram: (String) -> Unit,
+    hexagramListUiStateOk: List<HexagramUiState.Ok>,
+    openLibrary: () -> Unit,
+    askQuestion: () -> Unit,
+    showAnswers: () -> Unit,
+    aboutBook: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -69,32 +70,25 @@ fun HomeScreen(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        hexagramListUiState.forEach {
-            Row(
-                modifier = Modifier,
-                verticalAlignment = CenterVertically,
-            ) {
-                HexagramSymbol(
-                    rawStrokes = it.rawStrokes,
-                    modifier = Modifier.size(32.dp),
-                )
-                Text(
-                    text = "${it.hexagram.symbol}",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(start = 8.dp),
-                )
-                DummyButton(
-                    text = "${it.hexagram.id}. ${it.hexagram.title}",
-                    modifier = Modifier.padding(start = 8.dp),
-                    onClick = { navigateToHexagram(it.hexagram.id) }
-                )
-                Text(
-                    text = "${it.hexagram.logogram}",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(start = 8.dp),
-                )
-            }
-        }
+        TbocDummyButton(
+            text = "library",
+            onClick = openLibrary,
+        )
+
+        TbocDummyButton(
+            text = "ask-question",
+            onClick = askQuestion,
+        )
+
+        TbocDummyButton(
+            text = "answers-list",
+            onClick = showAnswers,
+        )
+
+        TbocDummyButton(
+            text = "about book",
+            onClick = aboutBook,
+        )
     }
 }
 
@@ -106,8 +100,11 @@ fun HomeScreenPreview() {
             modifier = Modifier.fillMaxSize(),
         ) {
             HomeScreen(
-                hexagramListUiState = previewHexagrams.map { it.toUiState() },
-                navigateToHexagram = { _ -> },
+                hexagramListUiStateOk = previewHexagrams.map { it.toUiStateOk() },
+                openLibrary = { },
+                askQuestion = { },
+                showAnswers = { },
+                aboutBook = { },
             )
         }
     }

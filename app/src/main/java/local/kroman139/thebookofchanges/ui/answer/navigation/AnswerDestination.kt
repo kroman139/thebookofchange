@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package local.kroman139.thebookofchanges.ui.hexagram.navigation
+package local.kroman139.thebookofchanges.ui.answer.navigation
 
 import android.net.Uri
 import androidx.navigation.NavBackStackEntry
@@ -22,21 +22,24 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import local.kroman139.thebookofchanges.navigation.TbocNavigationDestination
 
-object HexagramDestination : TbocNavigationDestination {
-    internal const val hexagramIdArg = "hexagramId"
+object AnswerDestination : TbocNavigationDestination {
+    internal const val questionIdArg = "questionId"
 
-    fun hexagramIdNavArgument() = navArgument(hexagramIdArg) { type = NavType.StringType }
+    fun questionIdNavArgument() =
+        navArgument(questionIdArg) { type = NavType.StringType }
 
-    override val route = "hexagram_route/{$hexagramIdArg}"
-    override val destination = "hexagram_destination"
+    override val route = "answer_route/{$questionIdArg}"
+    override val destination = "answer_destination"
 
-    fun createNavigationRoute(hexagramId: String): String {
-        val encodedId = Uri.encode(hexagramId)
-        return "hexagram_route/$encodedId"
+    fun createNavigationRoute(questionId: String): String {
+        val encodedId = Uri.encode(questionId)
+
+        return "answer_route/$encodedId"
     }
 
     fun fromNavArgs(entry: NavBackStackEntry): String {
-        val encodedId = entry.arguments?.getString(hexagramIdArg)!!
+        val encodedId = entry.arguments?.getString(questionIdArg)!!
+
         return Uri.decode(encodedId)
     }
 }
