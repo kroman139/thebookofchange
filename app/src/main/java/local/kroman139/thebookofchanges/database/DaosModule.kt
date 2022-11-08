@@ -14,31 +14,19 @@
  *   limitations under the License.
  */
 
-package local.kroman139.thebookofchanges.data.di
+package local.kroman139.thebookofchanges.database
 
-import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import local.kroman139.thebookofchanges.data.repository.AnswerRepository
-import local.kroman139.thebookofchanges.data.repository.DatabaseAnswerRepository
-import local.kroman139.thebookofchanges.data.repository.HexagramRepository
-import local.kroman139.thebookofchanges.data.repository.XmlHexagramRepository
-import javax.inject.Singleton
+import local.kroman139.thebookofchanges.database.dao.AnswerDao
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface DataModule {
-
-    @Singleton
-    @Binds
-    fun bindsHexagramRepository(
-        hexagramRepository: XmlHexagramRepository
-    ): HexagramRepository
-
-    @Singleton
-    @Binds
-    fun bindsAnswerRepository(
-        answerRepository: DatabaseAnswerRepository
-    ): AnswerRepository
+object DaosModule {
+    @Provides
+    fun providesAuthorDao(
+        database: TbocDatabase,
+    ): AnswerDao = database.answerDao()
 }

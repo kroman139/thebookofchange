@@ -16,72 +16,136 @@
 
 package local.kroman139.thebookofchanges.ui.answer
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import local.kroman139.thebookofchanges.designsystem.component.DummyText
-import local.kroman139.thebookofchanges.designsystem.component.TbocBackButton
+import kotlinx.datetime.Clock
+import local.kroman139.thebookofchanges.designsystem.component.DevicePreviews
+import local.kroman139.thebookofchanges.designsystem.component.TbocHexagramView
+import local.kroman139.thebookofchanges.designsystem.component.TbocScreen
+import local.kroman139.thebookofchanges.designsystem.theme.TbocTheme
+import local.kroman139.thebookofchanges.model.data.Answer
+import local.kroman139.thebookofchanges.model.data.previewHexagrams
+import local.kroman139.thebookofchanges.ui.utils.toUiStateOk
 
 @Composable
 fun AnswerRoute(
-    onBackClick: () -> Unit,
+    navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AnswerViewModel = hiltViewModel(),
 ) {
-    val questionId by viewModel.dummyQuestionIdStream.collectAsState()
+    val answerUiState by viewModel.answerUiStream.collectAsState()
 
     AnswerScreen(
-        uiState = questionId,
-        onBackClick = onBackClick,
+        answerUi = answerUiState,
+        navigateBack = navigateBack,
         modifier = modifier,
     )
 }
 
 @Composable
 fun AnswerScreen(
-    uiState: String,
-    onBackClick: () -> Unit,
+    answerUi: AnswerUiState,
+    navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Surface(
-        modifier = modifier.background(color = Color.Gray),
+    when (answerUi) {
+        is AnswerUiState.Loading ->
+            TbocScreen(
+                navigateBack = navigateBack,
+                modifier = modifier,
+                titleText = "Loading answer...",
+            ) {
+            }
+        is AnswerUiState.Success ->
+            TbocScreen(
+                navigateBack = navigateBack,
+                modifier = modifier,
+                titleText = "Answer",
+            ) {
+                QuestionWithAnswer(answerUi)
+            }
+    }
+}
+
+@Composable
+fun QuestionWithAnswer(
+    answerUiSuccess: AnswerUiState.Success,
+    modifier: Modifier = Modifier,
+) {
+    val askedOnStr = answerUiSuccess.askedOnStr
+    val answer = answerUiSuccess.answer
+    val hexagram = answerUiSuccess.hexagram
+
+    val adoptedQuestion = answer.question.ifBlank { "..." }
+
+    Column(
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
+            .padding(start = 16.dp, end = 16.dp),
     ) {
-        Column(
+        Text(
+            text = "${adoptedQuestion}",
+            modifier = Modifier.align(alignment = Alignment.End),
+        )
+
+        Text(
+            text = "Answered on\n$askedOnStr",
+            textAlign = TextAlign.End,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.74f),
             modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(all = 16.dp),
+                .padding(top = 8.dp, bottom = 16.dp)
+                .align(alignment = Alignment.End)
+        )
+
+
+        // Divider(modifier = Modifier.padding(top = 8.dp, bottom = 8.dp))
+
+        TbocHexagramView(hexagramUiOk = hexagram.toUiStateOk())
+
+    }
+}
+
+@DevicePreviews
+@Composable
+fun QuestionWithAnswerPreview() {
+    val hexagram = previewHexagrams[0]
+
+    val answer = AnswerUiState.Success(
+        askedOnStr = "Oct 21, 2022, 20:20 pm",
+        answer = Answer(
+            id = 0,
+            askedOn = Clock.System.now(),
+            utcOffset = 0,
+            question = "This is demo question. How it would be to be a ...?",
+            hexagramId = hexagram.id,
+        ),
+        hexagram = hexagram,
+    )
+
+    TbocTheme {
+        Surface(
+            modifier = Modifier
+                .fillMaxSize(),
         ) {
-            Row {
-                TbocBackButton(
-                    onClick = onBackClick,
-                )
-
-                DummyText(
-                    text = "Answer",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(start = 16.dp),
-                )
-            }
-
-            Column {
-                DummyText(
-                    text = "your question will be here: $uiState"
-                )
-            }
+            AnswerScreen(
+                answerUi = answer,
+                navigateBack = {},
+            )
         }
     }
 }

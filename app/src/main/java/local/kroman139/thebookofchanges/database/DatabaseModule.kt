@@ -14,31 +14,27 @@
  *   limitations under the License.
  */
 
-package local.kroman139.thebookofchanges.data.di
+package local.kroman139.thebookofchanges.database
 
-import dagger.Binds
+import android.content.Context
+import androidx.room.Room
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import local.kroman139.thebookofchanges.data.repository.AnswerRepository
-import local.kroman139.thebookofchanges.data.repository.DatabaseAnswerRepository
-import local.kroman139.thebookofchanges.data.repository.HexagramRepository
-import local.kroman139.thebookofchanges.data.repository.XmlHexagramRepository
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface DataModule {
-
+object DatabaseModule {
+    @Provides
     @Singleton
-    @Binds
-    fun bindsHexagramRepository(
-        hexagramRepository: XmlHexagramRepository
-    ): HexagramRepository
-
-    @Singleton
-    @Binds
-    fun bindsAnswerRepository(
-        answerRepository: DatabaseAnswerRepository
-    ): AnswerRepository
+    fun providesNiaDatabase(
+        @ApplicationContext context: Context,
+    ): TbocDatabase = Room.databaseBuilder(
+        context,
+        TbocDatabase::class.java,
+        "tboc-database"
+    ).build()
 }

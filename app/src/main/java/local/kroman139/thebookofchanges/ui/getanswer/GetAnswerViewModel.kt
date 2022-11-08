@@ -14,31 +14,40 @@
  *   limitations under the License.
  */
 
-package local.kroman139.thebookofchanges.ui.askquestion
+package local.kroman139.thebookofchanges.ui.getanswer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import local.kroman139.thebookofchanges.data.repository.HexagramRepository
+import local.kroman139.thebookofchanges.data.repository.AnswerRepository
 import javax.inject.Inject
 import kotlin.random.Random
-import kotlin.random.nextUInt
 
 @HiltViewModel
-class AskQuestionViewModel @Inject constructor(
-    hexagramRepository: HexagramRepository,
+class GetAnswerViewModel @Inject constructor(
+    private val answerRepository: AnswerRepository,
 ) : ViewModel() {
 
-    fun storeRandomAnswer(
-        navigateToAnswer: (String) -> Unit,
+    private val rnd = Random(System.currentTimeMillis())
+
+    fun autoGetAndOpenAnswer(
+        question: String,
+        navigateToAnswer: (Long) -> Unit,
     ) {
         viewModelScope.launch {
-            val hexaId = Random.nextUInt(1U..64U).toString()
-            // store "question - answer"
+            val hexagramId = (1..64).random(rnd).toString()
 
-            navigateToAnswer(hexaId)
+            println("scope launch: $question, $hexagramId")
+
+            val res = answerRepository.insertAnswer(
+                question = question,
+                hexagramId = hexagramId
+            )
+
+            println("scope result: $res")
+
+            navigateToAnswer(res)
         }
     }
 }

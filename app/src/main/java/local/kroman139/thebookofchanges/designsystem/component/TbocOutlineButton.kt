@@ -14,11 +14,25 @@
  *   limitations under the License.
  */
 
-package local.kroman139.thebookofchanges.ui.askquestion.navigation
+package local.kroman139.thebookofchanges.designsystem.component
 
-import local.kroman139.thebookofchanges.navigation.TbocNavigationDestination
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 
-object AskQuestionDestination : TbocNavigationDestination {
-    override val route = "ask_question_route"
-    override val destination = "ask_question_destination"
+@Composable
+fun TbocOutlinedButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+) {
+    OutlinedButton(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+    ) {
+        Text(text = text)
+    }
 }

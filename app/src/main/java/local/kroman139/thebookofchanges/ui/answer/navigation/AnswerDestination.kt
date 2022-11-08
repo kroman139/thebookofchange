@@ -23,23 +23,17 @@ import androidx.navigation.navArgument
 import local.kroman139.thebookofchanges.navigation.TbocNavigationDestination
 
 object AnswerDestination : TbocNavigationDestination {
-    internal const val questionIdArg = "questionId"
+    internal const val answerIdArg = "answerId"
 
-    fun questionIdNavArgument() =
-        navArgument(questionIdArg) { type = NavType.StringType }
+    fun answerIdNavArgument() =
+        navArgument(answerIdArg) { type = NavType.LongType }
 
-    override val route = "answer_route/{$questionIdArg}"
+    override val route = "answer_route/{$answerIdArg}"
     override val destination = "answer_destination"
 
-    fun createNavigationRoute(questionId: String): String {
-        val encodedId = Uri.encode(questionId)
+    fun createNavigationRoute(answerId: Long): String =
+        "answer_route/$answerId"
 
-        return "answer_route/$encodedId"
-    }
-
-    fun fromNavArgs(entry: NavBackStackEntry): String {
-        val encodedId = entry.arguments?.getString(questionIdArg)!!
-
-        return Uri.decode(encodedId)
-    }
+    fun fromNavArgs(entry: NavBackStackEntry): Long =
+        entry.arguments?.getLong(answerIdArg)!!
 }

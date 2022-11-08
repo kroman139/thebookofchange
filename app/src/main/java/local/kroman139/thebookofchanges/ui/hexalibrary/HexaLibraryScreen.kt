@@ -37,7 +37,7 @@ import local.kroman139.thebookofchanges.ui.utils.HexagramUiState
 
 @Composable
 fun HexaLibraryRoute(
-    onBackClick: () -> Unit,
+    navigateBack: () -> Unit,
     navigateToHexagram: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HexaLibraryViewModel = hiltViewModel(),
@@ -46,7 +46,7 @@ fun HexaLibraryRoute(
 
     HexaLibraryScreen(
         uiState = uiState,
-        onBackClick = onBackClick,
+        navigateBack = navigateBack,
         switchMode = viewModel::switchViewMode,
         navigateToHexagram = navigateToHexagram,
         modifier = modifier,
@@ -56,20 +56,25 @@ fun HexaLibraryRoute(
 @Composable
 fun HexaLibraryScreen(
     uiState: HexaLibraryUiState,
-    onBackClick: () -> Unit,
+    navigateBack: () -> Unit,
     switchMode: (ViewMode) -> Unit,
     navigateToHexagram: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when (uiState) {
         is HexaLibraryUiState.Library -> {
-            LibraryView(
-                uiStateLibrary = uiState,
-                onBackClick = onBackClick,
-                switchMode = switchMode,
-                navigateToHexagram = navigateToHexagram,
+            TbocScreen(
+                navigateBack = navigateBack,
                 modifier = modifier,
-            )
+                titleText = "Answer",
+            ) {
+                LibraryView(
+                    uiStateLibrary = uiState,
+                    switchMode = switchMode,
+                    navigateToHexagram = navigateToHexagram,
+                    modifier = modifier,
+                )
+            }
         }
         else -> {
             // TODO: What to do?
@@ -80,7 +85,6 @@ fun HexaLibraryScreen(
 @Composable
 fun LibraryView(
     uiStateLibrary: HexaLibraryUiState.Library,
-    onBackClick: () -> Unit,
     switchMode: (ViewMode) -> Unit,
     navigateToHexagram: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -94,17 +98,6 @@ fun LibraryView(
                 .verticalScroll(rememberScrollState())
                 .padding(all = 16.dp),
         ) {
-            Row {
-                TbocBackButton(
-                    onClick = onBackClick,
-                )
-
-                DummyText(
-                    text = "Library View",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(start = 16.dp),
-                )
-            }
 
             Row(
                 modifier = Modifier.align(alignment = CenterHorizontally),

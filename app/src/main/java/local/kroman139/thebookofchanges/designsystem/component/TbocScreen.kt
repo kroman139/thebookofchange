@@ -14,66 +14,62 @@
  *   limitations under the License.
  */
 
-package local.kroman139.thebookofchanges.ui.aboutbook
+package local.kroman139.thebookofchanges.designsystem.component
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import local.kroman139.thebookofchanges.designsystem.component.DummyText
-import local.kroman139.thebookofchanges.designsystem.component.TbocBackButton
 
 @Composable
-fun AboutBookRoute(
+fun TbocScreen(
     navigateBack: () -> Unit,
+    titleText: String,
     modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
 ) {
-    AboutBookScreen(
+    TbocScreen(
         navigateBack = navigateBack,
         modifier = modifier,
+        screenHeader = {
+            Text(
+                text = titleText,
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier
+                    .align(alignment = Alignment.CenterVertically),
+            )
+        },
+        content = content,
     )
 }
 
 @Composable
-fun AboutBookScreen(
+fun TbocScreen(
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
+    screenHeader: @Composable RowScope.() -> Unit = {},
+    content: @Composable () -> Unit
 ) {
-    Surface(
-        modifier = modifier.background(color = Color.Gray),
-    ) {
+    Surface {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(all = 16.dp),
+            modifier = modifier,
         ) {
-            Row {
+            Row(
+                modifier = Modifier
+            ) {
                 TbocBackButton(
                     onClick = navigateBack,
                 )
 
-                DummyText(
-                    text = "About Book",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(start = 16.dp),
-                )
+                screenHeader()
             }
 
-            Column {
-                DummyText(
-                    text = "about book"
-                )
-            }
+            content()
         }
     }
 }

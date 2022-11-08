@@ -16,7 +16,10 @@
 
 package local.kroman139.thebookofchanges.ui
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.consumedWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -39,31 +42,23 @@ fun TbocApp(
 ) {
     TbocTheme {
         Surface(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize(),
         ) {
             Scaffold(
-                containerColor = Color.Transparent,
-                contentColor = MaterialTheme.colorScheme.onBackground,
+                //containerColor = Color.Transparent,
+                // contentColor = MaterialTheme.colorScheme.onBackground,
             ) { padding ->
-                Row(
-                    Modifier
+                TbocNavHost(
+                    navController = appState.navController,
+                    navigateBack = appState::navigateBack,
+                    navigate = appState::navigate,
+                    navigateFromHome = appState::navigateFromHome,
+                    modifier = Modifier
+                        .padding(padding)
                         .fillMaxSize()
-                        .windowInsetsPadding(
-                            WindowInsets.safeDrawing.only(
-                                WindowInsetsSides.Horizontal
-                            )
-                        )
-                ) {
-                    TbocNavHost(
-                        navController = appState.navController,
-                        onBackClick = appState::onBackClick,
-                        navigate = appState::navigate,
-                        navigateFromHome = appState::navigateFromHome,
-                        modifier = Modifier
-                            .padding(padding)
-                            .consumedWindowInsets(padding)
-                    )
-                }
+                        .consumedWindowInsets(padding)
+                )
             }
         }
     }

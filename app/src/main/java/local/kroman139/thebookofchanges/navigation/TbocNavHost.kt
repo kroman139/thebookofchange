@@ -27,8 +27,8 @@ import local.kroman139.thebookofchanges.ui.answer.AnswerRoute
 import local.kroman139.thebookofchanges.ui.answer.navigation.AnswerDestination
 import local.kroman139.thebookofchanges.ui.answerslist.AnswersListRoute
 import local.kroman139.thebookofchanges.ui.answerslist.navigation.AnswersListDestination
-import local.kroman139.thebookofchanges.ui.askquestion.AskQuestionRoute
-import local.kroman139.thebookofchanges.ui.askquestion.navigation.AskQuestionDestination
+import local.kroman139.thebookofchanges.ui.getanswer.GetAnswerRoute
+import local.kroman139.thebookofchanges.ui.getanswer.navigation.GetAnswerDestination
 import local.kroman139.thebookofchanges.ui.hexagram.HexagramRoute
 import local.kroman139.thebookofchanges.ui.hexagram.navigation.HexagramDestination
 import local.kroman139.thebookofchanges.ui.hexalibrary.HexaLibraryRoute
@@ -41,7 +41,7 @@ fun TbocNavHost(
     navController: NavHostController,
     navigate: (TbocNavigationDestination, String) -> Unit,
     navigateFromHome: (TbocNavigationDestination, String) -> Unit,
-    onBackClick: () -> Unit,
+    navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     startDestination: String = HomeDestination.route,
 ) {
@@ -53,22 +53,22 @@ fun TbocNavHost(
         composable(route = HomeDestination.route) {
             HomeRoute(
                 openLibrary = { navigate(HexaLibraryDestination, HexaLibraryDestination.route) },
-                askQuestion = { navigate(AskQuestionDestination, AskQuestionDestination.route) },
+                getAnswer = { navigate(GetAnswerDestination, GetAnswerDestination.route) },
                 showAnswers = { navigate(AnswersListDestination, AnswersListDestination.route) },
                 aboutBook = { navigate(AboutBookDestination, AboutBookDestination.route) },
             )
         }
         composable(route = HexaLibraryDestination.route) {
             HexaLibraryRoute(
-                onBackClick = onBackClick,
+                navigateBack = navigateBack,
                 navigateToHexagram = {
                     navigate(HexagramDestination, HexagramDestination.createNavigationRoute(it))
                 }
             )
         }
-        composable(route = AskQuestionDestination.route) {
-            AskQuestionRoute(
-                onBackClick = onBackClick,
+        composable(route = GetAnswerDestination.route) {
+            GetAnswerRoute(
+                navigateBack = navigateBack,
                 openAnswer = {
                     navigateFromHome(AnswerDestination, AnswerDestination.createNavigationRoute(it))
                 }
@@ -76,7 +76,7 @@ fun TbocNavHost(
         }
         composable(route = AnswersListDestination.route) {
             AnswersListRoute(
-                onBackClick = onBackClick,
+                navigateBack = navigateBack,
                 openAnswer = {
                     navigate(AnswerDestination, AnswerDestination.createNavigationRoute(it))
                 },
@@ -85,11 +85,11 @@ fun TbocNavHost(
         composable(
             route = AnswerDestination.route,
             arguments = listOf(
-                AnswerDestination.questionIdNavArgument()
+                AnswerDestination.answerIdNavArgument()
             )
         ) {
             AnswerRoute(
-                onBackClick = onBackClick
+                navigateBack = navigateBack
             )
         }
         composable(
@@ -99,12 +99,12 @@ fun TbocNavHost(
             )
         ) {
             HexagramRoute(
-                onBackClick = onBackClick
+                navigateBack = navigateBack
             )
         }
         composable(route = AboutBookDestination.route) {
             AboutBookRoute(
-                onBackClick = onBackClick
+                navigateBack = navigateBack
             )
         }
     }

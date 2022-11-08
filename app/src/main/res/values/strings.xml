@@ -16,4 +16,9 @@
 
 <resources>
     <string name="app_name">Книга перемен И-Цзин</string>
+    <string name="get_answer_auto_button_title">Получить ответ автоматически</string>
+    <string name="get_answer_question_title">Укажите вопрос (опционально)</string>
+    <string name="get_answer_screen_title">Получить ответ</string>
+
+    <string name="home_ask_question_action">Получить ответ</string>
 </resources>

@@ -154,6 +154,5 @@ class XmlHexagramRepository @Inject constructor(
 
     private fun XmlResourceParser.readText() = nextText().also { next() }
 
-
     override fun getHexagramsStream(): Flow<List<Hexagram>> = flow { emit(hexagramList) }
 }

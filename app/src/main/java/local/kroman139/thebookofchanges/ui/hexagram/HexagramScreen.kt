@@ -35,6 +35,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import local.kroman139.thebookofchanges.designsystem.component.DevicePreviews
 import local.kroman139.thebookofchanges.designsystem.component.TbocHexagramSymbol
 import local.kroman139.thebookofchanges.designsystem.component.TbocBackButton
+import local.kroman139.thebookofchanges.designsystem.component.TbocHexagramView
 import local.kroman139.thebookofchanges.designsystem.theme.TbocTheme
 import local.kroman139.thebookofchanges.model.data.HexagramStroke
 import local.kroman139.thebookofchanges.model.data.previewHexagrams
@@ -43,7 +44,7 @@ import local.kroman139.thebookofchanges.ui.utils.toUiStateOk
 
 @Composable
 fun HexagramRoute(
-    onBackClick: () -> Unit,
+    navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HexagramViewModel = hiltViewModel(),
 ) {
@@ -51,7 +52,7 @@ fun HexagramRoute(
 
     HexagramScreen(
         uiState = uiState,
-        onBackClick = onBackClick,
+        navigateBack = navigateBack,
         modifier = modifier,
     )
 }
@@ -60,17 +61,39 @@ fun HexagramRoute(
 @Composable
 internal fun HexagramScreen(
     uiState: HexagramUiState,
-    onBackClick: () -> Unit,
+    navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when(uiState) {
         is HexagramUiState.Ok -> {
-            HexagramView(
-                hexagramUiOk = uiState,
-                onBackClick = onBackClick,
-                modifier = modifier
-                    .fillMaxSize(),
-            )
+            Column {
+
+                val hexagram = uiState.hexagram
+
+                Row {
+                    TbocBackButton(
+                        onClick = navigateBack,
+                    )
+
+                    Text(
+                        text = "${hexagram.id}. ${hexagram.logogram} ${hexagram.title}",
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.padding(start = 16.dp),
+                    )
+
+                    TbocHexagramSymbol(
+                        rawStrokes = uiState.rawStrokes,
+                        modifier = Modifier.size(32.dp),
+                    )
+                }
+
+                TbocHexagramView(
+                    hexagramUiOk = uiState,
+                    modifier = modifier
+                        .fillMaxSize(),
+                )
+
+            }
         }
         else -> {
             // TODO: show empty screen or something else?
@@ -78,119 +101,6 @@ internal fun HexagramScreen(
     }
 }
 
-@Composable
-internal fun HexagramView(
-    hexagramUiOk: HexagramUiState.Ok,
-    onBackClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val hexagram = hexagramUiOk.hexagram
-
-    Surface(
-        modifier = modifier.background(color = Color.Gray),
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(all = 16.dp),
-        ) {
-            Row {
-                TbocBackButton(
-                    onClick = onBackClick,
-                )
-
-                Text(
-                    text = "${hexagram.id}. ${hexagram.logogram} ${hexagram.title}",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(start = 16.dp),
-                )
-
-                TbocHexagramSymbol(
-                    rawStrokes = hexagramUiOk.rawStrokes,
-                    modifier = Modifier.size(32.dp),
-                )
-            }
-
-            Text(
-                text = buildAnnotatedString {
-                    append(hexagram.text)
-                    append(" ")
-                    withStyle(SpanStyle(fontStyle = FontStyle.Italic)) {
-                        append(hexagram.summary)
-                    }
-                },
-                modifier = Modifier.padding(vertical = 8.dp),
-            )
-
-            hexagram.strokes.forEachIndexed { i, stroke ->
-                BoxWithConstraints {
-                    if (maxWidth < 380.dp) {
-                        NarrowStrokeView(hexagramUiOk, i, stroke)
-                    } else {
-                        WideStrokeView(hexagramUiOk, i, stroke)
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun NarrowStrokeView(
-    hexagramUiOk: HexagramUiState.Ok,
-    idx: Int,
-    stroke: HexagramStroke
-) {
-    Column {
-        TbocHexagramSymbol(
-            rawStrokes = hexagramUiOk.rawStrokes,
-            modifier = Modifier
-                .padding(top = 8.dp)
-                .size(32.dp),
-            highlightIndex = idx,
-        )
-
-        Text(
-            text = buildAnnotatedString {
-                append(stroke.text)
-                append(" ")
-                withStyle(SpanStyle(fontStyle = FontStyle.Italic)) {
-                    append(stroke.summary)
-                }
-            },
-            modifier = Modifier.padding(vertical = 8.dp),
-        )
-    }
-}
-
-@Composable
-private fun WideStrokeView(
-    hexagramUiOk: HexagramUiState.Ok,
-    idx: Int,
-    stroke: HexagramStroke
-) {
-    Row(modifier = Modifier.padding(top = 8.dp)) {
-        TbocHexagramSymbol(
-            rawStrokes = hexagramUiOk.rawStrokes,
-            modifier = Modifier
-                .padding(top = 7.dp)
-                .size(32.dp),
-            highlightIndex = idx,
-        )
-
-        Text(
-            text = buildAnnotatedString {
-                append(stroke.text)
-                append(" ")
-                withStyle(SpanStyle(fontStyle = FontStyle.Italic)) {
-                    append(stroke.summary)
-                }
-            },
-            modifier = Modifier.padding(horizontal = 8.dp),
-        )
-    }
-}
 
 @DevicePreviews
 @Composable
@@ -201,9 +111,8 @@ fun HexagramViewPreview() {
         Surface(
             modifier = Modifier.fillMaxSize(),
         ) {
-            HexagramView(
+            TbocHexagramView(
                 hexagramUiOk = hexagram.toUiStateOk(),
-                onBackClick = { },
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(all = 16.dp),

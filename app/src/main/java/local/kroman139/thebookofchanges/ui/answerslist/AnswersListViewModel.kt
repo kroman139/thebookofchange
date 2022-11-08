@@ -17,12 +17,31 @@
 package local.kroman139.thebookofchanges.ui.answerslist
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import local.kroman139.thebookofchanges.data.repository.AnswerRepository
 import local.kroman139.thebookofchanges.data.repository.HexagramRepository
+import local.kroman139.thebookofchanges.model.data.Answer
 import javax.inject.Inject
 
 @HiltViewModel
 class AnswersListViewModel @Inject constructor(
     dummy_hexagramRepository: HexagramRepository, // TODO: remove this argument
+    answerRepository: AnswerRepository,
 ) : ViewModel() {
+
+    val dummyAns = answerRepository
+        .getAllAnswers()
+        .map {
+            println("zzzzz: AnswersListViewModel, $it")
+            it
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = emptyList<Answer>()
+        )
 }

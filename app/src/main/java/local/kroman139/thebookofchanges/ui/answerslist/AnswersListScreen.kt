@@ -16,39 +16,37 @@
 
 package local.kroman139.thebookofchanges.ui.answerslist
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Card
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import local.kroman139.thebookofchanges.designsystem.component.DummyText
-import local.kroman139.thebookofchanges.designsystem.component.TbocBackButton
 import local.kroman139.thebookofchanges.designsystem.component.TbocDummyButton
-import local.kroman139.thebookofchanges.ui.hexalibrary.HexaLibraryScreen
-import local.kroman139.thebookofchanges.ui.hexalibrary.HexaLibraryViewModel
+import local.kroman139.thebookofchanges.designsystem.component.TbocScreen
+import local.kroman139.thebookofchanges.model.data.Answer
 
 @Composable
 fun AnswersListRoute(
-    onBackClick: () -> Unit,
-    openAnswer: (String) -> Unit,
+    navigateBack: () -> Unit,
+    openAnswer: (Long) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AnswersListViewModel = hiltViewModel(),
 ) {
 
+    val x by viewModel.dummyAns.collectAsState()
+
     AnswersListScreen(
-        uiState = "23",
-        onBackClick = onBackClick,
+        uiState = x,
+        navigateBack = navigateBack,
         openAnswer = openAnswer,
         modifier = modifier,
     )
@@ -56,42 +54,84 @@ fun AnswersListRoute(
 
 @Composable
 fun AnswersListScreen(
-    uiState: String,
-    onBackClick: () -> Unit,
-    openAnswer: (String) -> Unit,
+    uiState: List<Answer>,
+    navigateBack: () -> Unit,
+    openAnswer: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Surface(
-        modifier = modifier.background(color = Color.Gray),
+    SideEffect {
+        println("AnswersListScreen: uiState = $uiState")
+    }
+
+    TbocScreen(
+        navigateBack = navigateBack,
+        titleText = "My answers",
+        modifier = modifier,
     ) {
-        Column(
+//        LazyColumn(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .verticalScroll(rememberScrollState())
+//                .padding(all = 16.dp),
+//        ) {
+//
+//            items(
+//                items = uiState,
+//                key = { it.id },
+//            ) {
+//                //Card {
+//                    //Column {
+//                        DummyText(
+//                            text = "${it.question}"
+//                        )
+//
+//                        TbocDummyButton(
+//                            text = "view ${it.hexagramId}",
+//                            onClick = { openAnswer(it.id) }
+//                        )
+//                    //}
+//                //}
+//            }
+//        }
+
+
+//        Column(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(start = 8.dp, end = 8.dp)
+//                //.verticalScroll(rememberScrollState())
+//                .imePadding(),
+//        ) {
+//        }
+
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+//                .verticalScroll(rememberScrollState())
                 .padding(all = 16.dp),
         ) {
-            Row {
-                TbocBackButton(
-                    onClick = onBackClick,
-                )
 
-                DummyText(
-                    text = "Question/Answer",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(start = 16.dp),
-                )
-            }
-
-            Column {
-                DummyText(
-                    text = "your question/answer list"
-                )
-
-                TbocDummyButton(
-                    text = "open answer $uiState",
-                    onClick = { openAnswer(uiState) }
-                )
-            }
+//            items(
+//                items = uiState,
+//                key = { it.id },
+//            ) {
+//
+//                //uiState.forEach {
+//                Card(
+//                    //modifier = Modifier.fillMaxWidth()
+//                ) {
+//                    //Column {
+//                    DummyText(
+//                        text = "${it.question}"
+//                    )
+//
+//                    TbocDummyButton(
+//                        text = "view ${it.hexagramId}",
+//                        onClick = { openAnswer(it.id) }
+//                    )
+//                    //}
+//                }
+//            }
         }
     }
 }

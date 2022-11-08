@@ -71,7 +71,7 @@ class TbocAppState(
         }
     }
 
-    fun onBackClick() {
+    fun navigateBack() {
         navController.popBackStack()
     }
 }

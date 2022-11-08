@@ -16,8 +16,10 @@
 
 package local.kroman139.thebookofchanges.ui.home
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
@@ -26,9 +28,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import local.kroman139.thebookofchanges.R
 import local.kroman139.thebookofchanges.designsystem.component.DevicePreviews
 import local.kroman139.thebookofchanges.designsystem.component.TbocDummyButton
+import local.kroman139.thebookofchanges.designsystem.component.TbocOutlinedButton
 import local.kroman139.thebookofchanges.designsystem.theme.TbocTheme
 import local.kroman139.thebookofchanges.model.data.previewHexagrams
 import local.kroman139.thebookofchanges.ui.utils.HexagramUiState
@@ -37,7 +42,7 @@ import local.kroman139.thebookofchanges.ui.utils.toUiStateOk
 @Composable
 fun HomeRoute(
     openLibrary: () -> Unit,
-    askQuestion: () -> Unit,
+    getAnswer: () -> Unit,
     showAnswers: () -> Unit,
     aboutBook: () -> Unit,
     modifier: Modifier = Modifier,
@@ -48,7 +53,7 @@ fun HomeRoute(
     HomeScreen(
         hexagramListUiStateOk = hexagramListUiState,
         openLibrary = openLibrary,
-        askQuestion = askQuestion,
+        getAnswer = getAnswer,
         showAnswers = showAnswers,
         aboutBook = aboutBook,
         modifier = modifier,
@@ -59,7 +64,7 @@ fun HomeRoute(
 fun HomeScreen(
     hexagramListUiStateOk: List<HexagramUiState.Ok>,
     openLibrary: () -> Unit,
-    askQuestion: () -> Unit,
+    getAnswer: () -> Unit,
     showAnswers: () -> Unit,
     aboutBook: () -> Unit,
     modifier: Modifier = Modifier,
@@ -69,15 +74,17 @@ fun HomeScreen(
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
     ) {
         TbocDummyButton(
             text = "library",
             onClick = openLibrary,
         )
 
-        TbocDummyButton(
-            text = "ask-question",
-            onClick = askQuestion,
+        TbocOutlinedButton(
+            text = stringResource(R.string.home_ask_question_action),
+            onClick = getAnswer,
+            modifier = Modifier.fillMaxWidth()
         )
 
         TbocDummyButton(
@@ -102,7 +109,7 @@ fun HomeScreenPreview() {
             HomeScreen(
                 hexagramListUiStateOk = previewHexagrams.map { it.toUiStateOk() },
                 openLibrary = { },
-                askQuestion = { },
+                getAnswer = { },
                 showAnswers = { },
                 aboutBook = { },
             )
