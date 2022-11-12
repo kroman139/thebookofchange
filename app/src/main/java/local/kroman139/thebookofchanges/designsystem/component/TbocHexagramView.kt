@@ -17,43 +17,32 @@
 package local.kroman139.thebookofchanges.designsystem.component
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import local.kroman139.thebookofchanges.designsystem.theme.TbocTheme
+import local.kroman139.thebookofchanges.model.data.Hexagram
 import local.kroman139.thebookofchanges.model.data.HexagramStroke
-import local.kroman139.thebookofchanges.ui.utils.HexagramUiState
+import local.kroman139.thebookofchanges.model.data.previewHexagrams
 
 @Composable
-internal fun TbocHexagramView(
-    hexagramUiOk: HexagramUiState.Ok,
+fun TbocHexagramView(
+    hexagram: Hexagram,
     modifier: Modifier = Modifier,
 ) {
-    val hexagram = hexagramUiOk.hexagram
+    Column(modifier = modifier) {
 
-    Column(
-        modifier = modifier,
-    ) {
-//        Row {
-//            TbocBackButton(
-//                onClick = navigateBack,
-//            )
-//
-//            Text(
-//                text = "${hexagram.id}. ${hexagram.logogram} ${hexagram.title}",
-//                style = MaterialTheme.typography.titleLarge,
-//                modifier = Modifier.padding(start = 16.dp),
-//            )
-//
-//            TbocHexagramSymbol(
-//                rawStrokes = hexagramUiOk.rawStrokes,
-//                modifier = Modifier.size(32.dp),
-//            )
-//        }
+        HexaHeader(hexagram = hexagram)
 
         Text(
             text = buildAnnotatedString {
@@ -69,25 +58,77 @@ internal fun TbocHexagramView(
         hexagram.strokes.forEachIndexed { i, stroke ->
             BoxWithConstraints {
                 if (maxWidth < 380.dp) {
-                    NarrowStrokeView(hexagramUiOk, i, stroke)
+                    NarrowStrokeView(hexagram.symbolStrokes, i, stroke)
                 } else {
-                    WideStrokeView(hexagramUiOk, i, stroke)
+                    WideStrokeView(hexagram.symbolStrokes, i, stroke)
                 }
             }
         }
     }
 }
 
+@Composable
+private fun HexaHeader(
+    hexagram: Hexagram,
+    modifier: Modifier = Modifier,
+) {
+    Row(modifier = Modifier.fillMaxWidth()) {
+        Column {
+            TbocHexagramSymbol(
+                rawStrokes = hexagram.symbolStrokes,
+                modifier = Modifier
+                    .padding(all = 8.dp)
+                    .size(32.dp),
+            )
+
+            // TODO: remove this debug text
+//                Text(
+//                    text = hexagram.symbol,
+//                    color = MaterialTheme.colorScheme.outlineVariant,
+//                    style = MaterialTheme.typography.titleLarge,
+//                    textAlign = TextAlign.Center,
+//                    modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
+//                )
+        }
+
+        Text(
+            text = buildAnnotatedString {
+                withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                    append("${hexagram.id}. ")
+                }
+                append(hexagram.title)
+            },
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .weight(weight = 1.0f),
+        )
+
+        Text(
+            text = buildAnnotatedString {
+                hexagram.logogram.forEachIndexed() { idx, char ->
+                    if (idx > 0) {
+                        append("\n")
+                    }
+                    append(char)
+                }
+            },
+            modifier = Modifier.padding(start = 8.dp, top = 8.dp, end = 8.dp),
+            textAlign = TextAlign.Center,
+        )
+
+    }
+}
+
 
 @Composable
 private fun NarrowStrokeView(
-    hexagramUiOk: HexagramUiState.Ok,
+    rawStrokes: List<Boolean>,
     idx: Int,
     stroke: HexagramStroke
 ) {
     Column {
         TbocHexagramSymbol(
-            rawStrokes = hexagramUiOk.rawStrokes,
+            rawStrokes = rawStrokes,
             modifier = Modifier
                 .padding(top = 8.dp)
                 .size(32.dp),
@@ -109,13 +150,13 @@ private fun NarrowStrokeView(
 
 @Composable
 private fun WideStrokeView(
-    hexagramUiOk: HexagramUiState.Ok,
+    rawStrokes: List<Boolean>,
     idx: Int,
     stroke: HexagramStroke
 ) {
     Row(modifier = Modifier.padding(top = 8.dp)) {
         TbocHexagramSymbol(
-            rawStrokes = hexagramUiOk.rawStrokes,
+            rawStrokes = rawStrokes,
             modifier = Modifier
 //                .padding(top = 7.dp)
                 .size(32.dp),
@@ -132,5 +173,26 @@ private fun WideStrokeView(
             },
             modifier = Modifier.padding(vertical = 8.dp),
         )
+    }
+}
+
+@DevicePreviews
+@Composable
+fun TbocHexagramViewPreview() {
+    val hexagram = previewHexagrams[0]
+
+    TbocTheme {
+        Surface(
+            modifier = Modifier
+            // .fillMaxSize(),
+        ) {
+            TbocHexagramView(
+                hexagram = previewHexagrams[0],
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(all = 16.dp),
+            )
+        }
     }
 }

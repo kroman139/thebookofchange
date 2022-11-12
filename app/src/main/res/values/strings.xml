@@ -27,4 +27,9 @@
     <string name="answers_list_delete_answer_menu_item">Удалить ответ</string>
     <string name="answers_list_list_is_empty_title">Список ответов пуст.</string>
     <string name="answers_list_get_answer_action">Получить ответ</string>
+
+    <string name="hexalibrary_screen_title">Библиотека гексаграм</string>
+
+    <string name="answer_screen_title">Ответ</string>
+    <string name="answer_screen_answered_on">Ответ получен</string>
 </resources>

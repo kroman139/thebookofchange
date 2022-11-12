@@ -16,7 +16,6 @@
 
 package local.kroman139.thebookofchanges.ui.hexagram
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -24,23 +23,17 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import local.kroman139.thebookofchanges.designsystem.component.DevicePreviews
-import local.kroman139.thebookofchanges.designsystem.component.TbocHexagramSymbol
-import local.kroman139.thebookofchanges.designsystem.component.TbocBackButton
 import local.kroman139.thebookofchanges.designsystem.component.TbocHexagramView
+import local.kroman139.thebookofchanges.designsystem.component.TbocScreen
 import local.kroman139.thebookofchanges.designsystem.theme.TbocTheme
-import local.kroman139.thebookofchanges.model.data.HexagramStroke
+import local.kroman139.thebookofchanges.model.data.Hexagram
 import local.kroman139.thebookofchanges.model.data.previewHexagrams
 import local.kroman139.thebookofchanges.ui.utils.HexagramUiState
-import local.kroman139.thebookofchanges.ui.utils.toUiStateOk
 
 @Composable
 fun HexagramRoute(
@@ -57,42 +50,34 @@ fun HexagramRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun HexagramScreen(
     uiState: HexagramUiState,
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    when(uiState) {
+    when (uiState) {
         is HexagramUiState.Ok -> {
-            Column {
+            val hexagram = uiState.hexagram
 
-                val hexagram = uiState.hexagram
+            TbocScreen(
+                navigateBack = navigateBack,
+                modifier = modifier,
+                titleText = hexagram.title,
+            ) {
+                Column(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(start = 16.dp, end = 16.dp),
+                ) {
 
-                Row {
-                    TbocBackButton(
-                        onClick = navigateBack,
-                    )
-
-                    Text(
-                        text = "${hexagram.id}. ${hexagram.logogram} ${hexagram.title}",
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.padding(start = 16.dp),
-                    )
-
-                    TbocHexagramSymbol(
-                        rawStrokes = uiState.rawStrokes,
-                        modifier = Modifier.size(32.dp),
+                    TbocHexagramView(
+                        hexagram = hexagram,
+                        modifier = modifier
+                            .fillMaxSize(),
                     )
                 }
-
-                TbocHexagramView(
-                    hexagramUiOk = uiState,
-                    modifier = modifier
-                        .fillMaxSize(),
-                )
-
             }
         }
         else -> {
@@ -100,7 +85,6 @@ internal fun HexagramScreen(
         }
     }
 }
-
 
 @DevicePreviews
 @Composable
@@ -112,9 +96,10 @@ fun HexagramViewPreview() {
             modifier = Modifier.fillMaxSize(),
         ) {
             TbocHexagramView(
-                hexagramUiOk = hexagram.toUiStateOk(),
+                hexagram = hexagram,
                 modifier = Modifier
                     .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
                     .padding(all = 16.dp),
             )
         }

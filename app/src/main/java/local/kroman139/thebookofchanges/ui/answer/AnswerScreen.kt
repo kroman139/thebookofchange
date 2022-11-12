@@ -29,17 +29,18 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.datetime.Clock
+import local.kroman139.thebookofchanges.R
 import local.kroman139.thebookofchanges.designsystem.component.DevicePreviews
 import local.kroman139.thebookofchanges.designsystem.component.TbocHexagramView
 import local.kroman139.thebookofchanges.designsystem.component.TbocScreen
 import local.kroman139.thebookofchanges.designsystem.theme.TbocTheme
 import local.kroman139.thebookofchanges.model.data.Answer
 import local.kroman139.thebookofchanges.model.data.previewHexagrams
-import local.kroman139.thebookofchanges.ui.utils.toUiStateOk
 
 @Composable
 fun AnswerRoute(
@@ -74,7 +75,7 @@ fun AnswerScreen(
             TbocScreen(
                 navigateBack = navigateBack,
                 modifier = modifier,
-                titleText = "Answer",
+                titleText = stringResource(R.string.answer_screen_title),
             ) {
                 QuestionWithAnswer(answerUi)
             }
@@ -103,7 +104,7 @@ fun QuestionWithAnswer(
         )
 
         Text(
-            text = "Answered on\n$askedOnStr",
+            text = stringResource(R.string.answer_screen_answered_on)+ "\n$askedOnStr",
             textAlign = TextAlign.End,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.74f),
@@ -112,11 +113,11 @@ fun QuestionWithAnswer(
                 .align(alignment = Alignment.End)
         )
 
-
         // Divider(modifier = Modifier.padding(top = 8.dp, bottom = 8.dp))
 
-        TbocHexagramView(hexagramUiOk = hexagram.toUiStateOk())
-
+        TbocHexagramView(
+            hexagram = hexagram,
+        )
     }
 }
 
