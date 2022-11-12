@@ -16,8 +16,6 @@
 
 package local.kroman139.thebookofchanges.ui.answer
 
-import android.os.Build
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -26,15 +24,12 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.datetime.UtcOffset
-import kotlinx.datetime.toJavaInstant
-import kotlinx.datetime.toJavaZoneOffset
 import local.kroman139.thebookofchanges.data.repository.AnswerRepository
 import local.kroman139.thebookofchanges.data.repository.HexagramRepository
 import local.kroman139.thebookofchanges.model.data.Answer
 import local.kroman139.thebookofchanges.model.data.Hexagram
 import local.kroman139.thebookofchanges.ui.answer.navigation.AnswerDestination
-import java.time.format.DateTimeFormatter
+import local.kroman139.thebookofchanges.ui.utils.formatDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -52,25 +47,8 @@ class AnswerViewModel @Inject constructor(
             hexagramRepository.getHexagramsStream()
         ) { answer, hexagramList ->
 
-            val askedOnStr =
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    try {
-                        DateTimeFormatter
-                            .ofPattern("MMM d, yyyy, HH:mm")
-                            .withZone(UtcOffset(seconds = answer.utcOffset / 1000).toJavaZoneOffset())
-                            .format(answer.askedOn.toJavaInstant())
-                    } catch (e: Throwable) {
-                        // TODO: fix it
-                        Log.e("wrong-date-format", "wrong", e)
-                        answer.askedOn.toString()
-                    }
-                } else {
-                    // TODO: fix it
-                    answer.askedOn.toString()
-                }
-
             AnswerUiState.Success(
-                askedOnStr = askedOnStr,
+                askedOnStr = formatDateTime(answer.askedOn, answer.utcOffset / 1000),
                 answer = answer,
                 hexagram = hexagramList.first { it.id == answer.hexagramId }
             )

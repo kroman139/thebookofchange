@@ -88,16 +88,21 @@ class XmlHexagramRepository @Inject constructor(
         next()
 
 //        println("zzz readHexagramNode: map = $map")
+        val strokes = map["strokes"] as? List<HexagramStroke>
+            ?: throw Throwable("Node 'strokes' is not found")
+
         return Hexagram(
             id = map["id"] as? String ?: throw Throwable("Attribute 'id' is not found"),
             symbol = map["symbol"] as? String ?: throw Throwable("Attribute 'symbol' is not found"),
-            logogram = map["logogram"] as? String ?: throw Throwable("Attribute 'logogram' is not found"),
+            logogram = map["logogram"] as? String
+                ?: throw Throwable("Attribute 'logogram' is not found"),
             title = map["title"] as? String ?: throw Throwable("Attribute 'title' is not found"),
 
             text = map["text"] as? String ?: throw Throwable("Node 'text' is not found"),
             summary = map["summary"] as? String ?: throw Throwable("Node 'summary' is not found"),
 
-            strokes = map["strokes"] as? List<HexagramStroke> ?: throw Throwable("Node 'strokes' is not found"),
+            strokes = strokes,
+            symbolStrokes = strokes.map { it.solidLine },
         )
     }
 

@@ -21,4 +21,10 @@
     <string name="get_answer_screen_title">Получить ответ</string>
 
     <string name="home_ask_question_action">Получить ответ</string>
+    <string name="home_open_answers_action">Мои вопросы и ответы</string>
+
+    <string name="answers_list_screen_title">Мои вопросы и ответы</string>
+    <string name="answers_list_delete_answer_menu_item">Удалить ответ</string>
+    <string name="answers_list_list_is_empty_title">Список ответов пуст.</string>
+    <string name="answers_list_get_answer_action">Получить ответ</string>
 </resources>

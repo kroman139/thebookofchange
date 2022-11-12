@@ -16,7 +16,14 @@
 
 package local.kroman139.thebookofchanges.ui.utils
 
+import android.os.Build
+import android.util.Log
+import kotlinx.datetime.Instant
+import kotlinx.datetime.UtcOffset
+import kotlinx.datetime.toJavaInstant
+import kotlinx.datetime.toJavaZoneOffset
 import local.kroman139.thebookofchanges.model.data.Hexagram
+import java.time.format.DateTimeFormatter
 
 sealed interface HexagramUiState {
     data class Ok(
@@ -32,3 +39,23 @@ fun Hexagram.toUiStateOk(): HexagramUiState.Ok =
         hexagram = this,
         rawStrokes = strokes.map { it.solidLine },
     )
+
+fun formatDateTime(
+    dateTime: Instant,
+    utcSecondsOffset: Int,
+): String =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        try {
+            DateTimeFormatter
+                .ofPattern("MMM d, yyyy, HH:mm")
+                .withZone(UtcOffset(seconds = utcSecondsOffset).toJavaZoneOffset())
+                .format(dateTime.toJavaInstant())
+        } catch (e: Throwable) {
+            // TODO: fix it
+            Log.e("wrong-date-format", "wrong", e)
+            dateTime.toString()
+        }
+    } else {
+        // TODO: fix it
+        dateTime.toString()
+    }

@@ -80,6 +80,7 @@ fun TbocNavHost(
                 openAnswer = {
                     navigate(AnswerDestination, AnswerDestination.createNavigationRoute(it))
                 },
+                getAnswer = { navigate(GetAnswerDestination, GetAnswerDestination.route) }
             )
         }
         composable(
