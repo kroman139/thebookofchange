@@ -37,7 +37,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import local.kroman139.thebookofchanges.R
 import local.kroman139.thebookofchanges.designsystem.component.*
@@ -187,7 +186,7 @@ fun LibraryListView(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     TbocHexagramSymbol(
-                        rawStrokes = it.rawStrokes,
+                        rawStrokes = it.hexagram.symbolStrokes,
                         modifier = Modifier.size(32.dp),
                     )
                     Text(
@@ -272,8 +271,6 @@ fun HexagramCard(
 @DevicePreviews
 @Composable
 fun HexagramCard() {
-    val hexagram = previewHexagrams[0]
-
     TbocTheme {
         Surface(
             modifier = Modifier

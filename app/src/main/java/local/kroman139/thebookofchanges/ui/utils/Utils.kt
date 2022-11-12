@@ -28,7 +28,6 @@ import java.time.format.DateTimeFormatter
 sealed interface HexagramUiState {
     data class Ok(
         val hexagram: Hexagram,
-        val rawStrokes: List<Boolean>,
     ) : HexagramUiState
 
     object Empty : HexagramUiState
@@ -37,7 +36,6 @@ sealed interface HexagramUiState {
 fun Hexagram.toUiStateOk(): HexagramUiState.Ok =
     HexagramUiState.Ok(
         hexagram = this,
-        rawStrokes = strokes.map { it.solidLine },
     )
 
 fun formatDateTime(
