@@ -16,20 +16,18 @@
 
 package local.kroman139.thebookofchanges.ui.hexalibrary
 
-import androidx.compose.foundation.background
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -43,7 +41,6 @@ import local.kroman139.thebookofchanges.designsystem.component.*
 import local.kroman139.thebookofchanges.designsystem.theme.TbocTheme
 import local.kroman139.thebookofchanges.model.data.Hexagram
 import local.kroman139.thebookofchanges.model.data.previewHexagrams
-import local.kroman139.thebookofchanges.ui.utils.HexagramUiState
 
 @Composable
 fun HexaLibraryRoute(
@@ -57,7 +54,6 @@ fun HexaLibraryRoute(
     HexaLibraryScreen(
         uiState = uiState,
         navigateBack = navigateBack,
-        switchMode = viewModel::switchViewMode,
         navigateToHexagram = navigateToHexagram,
         modifier = modifier,
     )
@@ -67,7 +63,6 @@ fun HexaLibraryRoute(
 fun HexaLibraryScreen(
     uiState: HexaLibraryUiState,
     navigateBack: () -> Unit,
-    switchMode: (ViewMode) -> Unit,
     navigateToHexagram: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -80,7 +75,6 @@ fun HexaLibraryScreen(
             is HexaLibraryUiState.Library -> {
                 LibraryView(
                     uiStateLibrary = uiState,
-                    switchMode = switchMode,
                     navigateToHexagram = navigateToHexagram,
                     modifier = modifier,
                 )
@@ -95,117 +89,39 @@ fun HexaLibraryScreen(
 @Composable
 fun LibraryView(
     uiStateLibrary: HexaLibraryUiState.Library,
-    switchMode: (ViewMode) -> Unit,
     navigateToHexagram: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Surface(
-        modifier = modifier.background(color = Color.Gray),
+    Column(
+        modifier = modifier
+            .fillMaxSize()
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-
-            Row(
-                modifier = Modifier.align(alignment = CenterHorizontally),
-            ) {
-                TbocDummyButton(
-                    text = "compact",
-                    enabled = (uiStateLibrary.viewMode != ViewMode.COMPACT),
-                    onClick = { switchMode(ViewMode.COMPACT) },
-                )
-
-                DummyText("*", modifier = Modifier.padding(start = 16.dp, end = 16.dp))
-
-                TbocDummyButton(
-                    text = "list",
-                    enabled = (uiStateLibrary.viewMode != ViewMode.LIST),
-                    onClick = { switchMode(ViewMode.LIST) },
-                )
-            }
-
-            when (uiStateLibrary.viewMode) {
-                ViewMode.COMPACT -> {
-                    LibraryCompactView(
-                        hexagramListUiStateOk = uiStateLibrary.hexaList,
-                        navigateToHexagram = navigateToHexagram,
-                    )
-                }
-                ViewMode.LIST -> {
-                    LibraryListView(
-                        hexagramListUiStateOk = uiStateLibrary.hexaList,
-                        navigateToHexagram = navigateToHexagram,
-                    )
-                }
-            }
-        }
+        LibraryListView(
+            hexaList = uiStateLibrary.hexaList,
+            navigateToHexagram = navigateToHexagram,
+        )
     }
 }
 
 @Composable
-fun LibraryCompactView(
-    hexagramListUiStateOk: List<HexagramUiState.Ok>,
-    navigateToHexagram: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    DummyText("compact view")
-}
-
-@Composable
 fun LibraryListView(
-    hexagramListUiStateOk: List<HexagramUiState.Ok>,
+    hexaList: List<Hexagram>,
     navigateToHexagram: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // DummyText("list view")
-
-    if (true) {
-        LazyColumn(
-            modifier = modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+    ) {
+        items(
+            items = hexaList,
+            key = { it.id },
         ) {
-            items(
-                items = hexagramListUiStateOk,
-                key = { it.hexagram.id },
-            ) {
-                HexagramCard(
-                    hexagram = it.hexagram,
-                    openHexagram = { navigateToHexagram(it.hexagram.id) },
-                    modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
-                )
-            }
-        }
-    } else {
-        Column(
-            horizontalAlignment = CenterHorizontally,
-        ) {
-            hexagramListUiStateOk.forEach {
-                Row(
-                    modifier = Modifier,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    TbocHexagramSymbol(
-                        rawStrokes = it.hexagram.symbolStrokes,
-                        modifier = Modifier.size(32.dp),
-                    )
-                    Text(
-                        text = "${it.hexagram.symbol}",
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.padding(start = 8.dp),
-                    )
-                    TbocDummyButton(
-                        text = "${it.hexagram.id}. ${it.hexagram.title}",
-                        modifier = Modifier.padding(start = 8.dp),
-                        onClick = { navigateToHexagram(it.hexagram.id) }
-                    )
-                    Text(
-                        text = "${it.hexagram.logogram}",
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.padding(start = 8.dp),
-                    )
-                }
-            }
+            HexagramCard(
+                hexagram = it,
+                openHexagram = { navigateToHexagram(it.id) },
+                modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
+            )
         }
     }
 }
@@ -217,27 +133,17 @@ fun HexagramCard(
     modifier: Modifier = Modifier,
 ) {
     TbocOutlinedCard(
-        onTap = { openHexagram() },
+        onClick = openHexagram,
         modifier = modifier,
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
-            Column {
-                TbocHexagramSymbol(
-                    rawStrokes = hexagram.symbolStrokes,
-                    modifier = Modifier
-                        .padding(all = 8.dp)
-                        .size(32.dp),
-                )
-
-                // TODO: remove this debug text
-//                Text(
-//                    text = hexagram.symbol,
-//                    color = MaterialTheme.colorScheme.outlineVariant,
-//                    style = MaterialTheme.typography.titleLarge,
-//                    textAlign = TextAlign.Center,
-//                    modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
-//                )
-            }
+            TbocHexagramSymbol(
+                rawStrokes = hexagram.symbolStrokes,
+                modifier = Modifier
+                    .padding(all = 8.dp)
+                    .size(32.dp)
+                    .align(alignment = CenterVertically),
+            )
 
             Text(
                 text = buildAnnotatedString {
@@ -247,30 +153,21 @@ fun HexagramCard(
                     append(hexagram.title)
                 },
                 modifier = Modifier
-                    .padding(top = 8.dp)
+                    .padding(top = 8.dp, bottom = 8.dp)
                     .weight(weight = 1.0f),
             )
 
-            Text(
-                text = buildAnnotatedString {
-                    hexagram.logogram.forEachIndexed() { idx, char ->
-                        if (idx > 0) {
-                            append("\n")
-                        }
-                        append(char)
-                    }
-                },
-                modifier = Modifier.padding(all = 8.dp),
-                textAlign = TextAlign.Center,
+            TbocHexaLogogram(
+                hexagram = hexagram,
+                modifier = Modifier.padding(all = 8.dp)
             )
-
         }
     }
 }
 
 @DevicePreviews
 @Composable
-fun HexagramCard() {
+fun HexagramCardPreview() {
     TbocTheme {
         Surface(
             modifier = Modifier

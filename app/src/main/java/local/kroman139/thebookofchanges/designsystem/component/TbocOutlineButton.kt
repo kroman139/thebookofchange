@@ -16,6 +16,7 @@
 
 package local.kroman139.thebookofchanges.designsystem.component
 
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,4 +36,19 @@ fun TbocOutlinedButton(
     ) {
         Text(text = text)
     }
+}
+
+@Composable
+fun TbocOutlinedButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    content: @Composable RowScope.() -> Unit
+) {
+    OutlinedButton(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        content = content,
+    )
 }

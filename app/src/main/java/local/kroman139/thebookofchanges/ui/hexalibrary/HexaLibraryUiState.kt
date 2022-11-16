@@ -16,6 +16,7 @@
 
 package local.kroman139.thebookofchanges.ui.hexalibrary
 
+import local.kroman139.thebookofchanges.model.data.Hexagram
 import local.kroman139.thebookofchanges.ui.utils.HexagramUiState
 
 enum class ViewMode {
@@ -25,8 +26,7 @@ enum class ViewMode {
 
 sealed interface HexaLibraryUiState {
     data class Library(
-        val viewMode: ViewMode,
-        val hexaList: List<HexagramUiState.Ok>,
+        val hexaList: List<Hexagram>,
     ) : HexaLibraryUiState
 
     object Empty : HexaLibraryUiState

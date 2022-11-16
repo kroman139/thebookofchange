@@ -16,32 +16,54 @@
 
 package local.kroman139.thebookofchanges.designsystem.component
 
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.OutlinedCard
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.input.pointer.pointerInput
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TbocOutlinedCard(
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    onLongPress: ((Offset) -> Unit)? = null,
-    onTap: ((Offset) -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit
-) =
+) {
+    val shape = CardDefaults.outlinedShape
+
     OutlinedCard(
         content = content,
+        shape = shape,
         modifier = modifier
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onLongPress = onLongPress,
-                    onTap = onTap,
-                )
-            },
+            .clip(shape)
+            .combinedClickable(
+                onClick = onClick,
+            )
     )
+}
 
-// TODO: add hover interaction/animation for "onTap"
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun TbocOutlinedCard(
+    onClick: () -> Unit,
+    onLongClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    val shape = CardDefaults.outlinedShape
+
+    OutlinedCard(
+        content = content,
+        shape = shape,
+        modifier = modifier
+            .clip(shape)
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick,
+            )
+    )
+}

@@ -63,7 +63,7 @@ internal fun HexagramScreen(
             TbocScreen(
                 navigateBack = navigateBack,
                 modifier = modifier,
-                titleText = hexagram.title,
+                titleText = "${hexagram.id}. ${hexagram.title}",
             ) {
                 Column(
                     modifier = modifier
@@ -101,6 +101,7 @@ fun HexagramViewPreview() {
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
                     .padding(all = 16.dp),
+                showEmptyLineLogogram = false,
             )
         }
     }

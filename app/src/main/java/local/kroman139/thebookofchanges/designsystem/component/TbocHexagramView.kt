@@ -19,15 +19,17 @@ package local.kroman139.thebookofchanges.designsystem.component
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import local.kroman139.thebookofchanges.designsystem.theme.TbocTheme
@@ -39,10 +41,14 @@ import local.kroman139.thebookofchanges.model.data.previewHexagrams
 fun TbocHexagramView(
     hexagram: Hexagram,
     modifier: Modifier = Modifier,
+    showEmptyLineLogogram: Boolean = true,
 ) {
     Column(modifier = modifier) {
 
-        HexaHeader(hexagram = hexagram)
+        HexaHeader(
+            hexagram = hexagram,
+            showEmptyLine = showEmptyLineLogogram,
+        )
 
         Text(
             text = buildAnnotatedString {
@@ -71,25 +77,45 @@ fun TbocHexagramView(
 private fun HexaHeader(
     hexagram: Hexagram,
     modifier: Modifier = Modifier,
+    showEmptyLine: Boolean = true,
 ) {
-    Row(modifier = Modifier.fillMaxWidth()) {
-        Column {
-            TbocHexagramSymbol(
-                rawStrokes = hexagram.symbolStrokes,
-                modifier = Modifier
-                    .padding(all = 8.dp)
-                    .size(32.dp),
-            )
+    Row(
+        modifier = modifier
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        TbocHexagramSymbol(
+            rawStrokes = hexagram.symbolStrokes,
+            modifier = Modifier
+                .padding(all = 8.dp)
+                .size(32.dp),
+        )
 
-            // TODO: remove this debug text
-//                Text(
-//                    text = hexagram.symbol,
-//                    color = MaterialTheme.colorScheme.outlineVariant,
-//                    style = MaterialTheme.typography.titleLarge,
-//                    textAlign = TextAlign.Center,
-//                    modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
-//                )
-        }
+        TbocHexaLogogram(
+            hexagram = hexagram,
+            fontSize = MaterialTheme.typography.headlineMedium.fontSize,
+            modifier = Modifier
+                .padding(start = 8.dp, top = 8.dp, end = 8.dp),
+//                .padding(all = 8.dp),
+            showEmptyLine = showEmptyLine,
+        )
+    }
+}
+
+@Composable
+private fun OldHexaHeader(
+    hexagram: Hexagram,
+    modifier: Modifier = Modifier,
+) {
+    Row(modifier = modifier.fillMaxWidth()) {
+        TbocHexagramSymbol(
+            rawStrokes = hexagram.symbolStrokes,
+            modifier = Modifier
+                .padding(all = 8.dp)
+                .size(32.dp)
+                .align(alignment = Alignment.CenterVertically),
+        )
 
         Text(
             text = buildAnnotatedString {
@@ -103,19 +129,10 @@ private fun HexaHeader(
                 .weight(weight = 1.0f),
         )
 
-        Text(
-            text = buildAnnotatedString {
-                hexagram.logogram.forEachIndexed() { idx, char ->
-                    if (idx > 0) {
-                        append("\n")
-                    }
-                    append(char)
-                }
-            },
-            modifier = Modifier.padding(start = 8.dp, top = 8.dp, end = 8.dp),
-            textAlign = TextAlign.Center,
+        TbocHexaLogogram(
+            hexagram = hexagram,
+            modifier = Modifier.padding(start = 8.dp, top = 8.dp, end = 8.dp)
         )
-
     }
 }
 
@@ -179,8 +196,6 @@ private fun WideStrokeView(
 @DevicePreviews
 @Composable
 fun TbocHexagramViewPreview() {
-    val hexagram = previewHexagrams[0]
-
     TbocTheme {
         Surface(
             modifier = Modifier
@@ -192,6 +207,7 @@ fun TbocHexagramViewPreview() {
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
                     .padding(all = 16.dp),
+                showEmptyLineLogogram = false,
             )
         }
     }

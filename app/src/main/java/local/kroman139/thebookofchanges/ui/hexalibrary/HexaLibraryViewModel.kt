@@ -32,26 +32,16 @@ class HexaLibraryViewModel @Inject constructor(
     hexagramRepository: HexagramRepository,
 ) : ViewModel() {
 
-    private val _viewMode = MutableStateFlow(ViewMode.COMPACT)
-
-    val hexaLibraryUiState = combine(
-        _viewMode,
+    val hexaLibraryUiState =
         hexagramRepository.getHexagramsStream()
-    ) { mode, list ->
-        HexaLibraryUiState.Library(
-            viewMode = mode,
-            hexaList = list.map { it.toUiStateOk() },
-        )
-    }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = HexaLibraryUiState.Empty
-        )
-
-    fun switchViewMode(viewMode: ViewMode) {
-        if (viewMode != _viewMode.value) {
-            _viewMode.update { viewMode }
-        }
-    }
+            .map { list ->
+                HexaLibraryUiState.Library(
+                    hexaList = list,
+                )
+            }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = HexaLibraryUiState.Empty
+            )
 }

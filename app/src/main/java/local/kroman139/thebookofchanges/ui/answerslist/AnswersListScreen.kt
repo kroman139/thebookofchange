@@ -158,8 +158,8 @@ fun AnswerCard(
     // TODO: use focused surface color while dropdown menu is on the screen
 
     TbocOutlinedCard(
-        onTap = { openAnswer() },
-        onLongPress = { menuOffset = it },
+        onClick = openAnswer,
+        onLongClick = { menuOffset = Offset.Zero },
         modifier = modifier,
     ) {
         DropdownMenu(
