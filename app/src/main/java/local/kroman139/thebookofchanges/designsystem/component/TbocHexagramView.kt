@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 kroman139
+ * Copyright (c) 2022-2023 kroman139
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -19,18 +19,19 @@ package local.kroman139.thebookofchanges.designsystem.component
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import local.kroman139.thebookofchanges.designsystem.theme.TbocTheme
 import local.kroman139.thebookofchanges.model.data.Hexagram
@@ -44,9 +45,24 @@ fun TbocHexagramView(
     showEmptyLineLogogram: Boolean = true,
 ) {
     Column(modifier = modifier) {
+        val fontSizeDp: Dp
+        val lineHeightDp: Dp
+
+        with(LocalDensity.current) {
+            val textStyle = LocalTextStyle.current
+            fontSizeDp = textStyle.fontSize.toDp()
+            lineHeightDp = textStyle.lineHeight.toDp()
+        }
+
+        val symbolHeight = fontSizeDp + lineHeightDp
+        val strokesPadding = lineHeightDp // + fontSizeDp
+
+        val logogramPadding = fontSizeDp
 
         HexaHeader(
             hexagram = hexagram,
+            symbolHeight = lineHeightDp,
+            logogramPadding = logogramPadding,
             showEmptyLine = showEmptyLineLogogram,
         )
 
@@ -58,15 +74,37 @@ fun TbocHexagramView(
                     append(hexagram.summary)
                 }
             },
-            modifier = Modifier.padding(vertical = 8.dp),
+            modifier = Modifier.padding(top = strokesPadding),
         )
+
+        val symbolPaddingTop = (lineHeightDp - fontSizeDp) / 2
+        val symbolPaddingEnd = fontSizeDp * 2 / 3
+
+        val textPaddingTop = lineHeightDp - fontSizeDp
+
+        val rowModifier = Modifier.padding(top = strokesPadding)
 
         hexagram.strokes.forEachIndexed { i, stroke ->
             BoxWithConstraints {
                 if (maxWidth < 380.dp) {
-                    NarrowStrokeView(hexagram.symbolStrokes, i, stroke)
+                    NarrowStrokeView(
+                        hexagram.symbolStrokes,
+                        i,
+                        stroke,
+                        symbolHeight = symbolHeight,
+                        textPaddingTop = textPaddingTop,
+                        modifier = rowModifier,
+                    )
                 } else {
-                    WideStrokeView(hexagram.symbolStrokes, i, stroke)
+                    WideStrokeView(
+                        hexagram.symbolStrokes,
+                        i,
+                        stroke,
+                        symbolHeight = symbolHeight,
+                        symbolPaddingTop = symbolPaddingTop,
+                        symbolPaddingEnd = symbolPaddingEnd,
+                        modifier = rowModifier,
+                    )
                 }
             }
         }
@@ -76,6 +114,8 @@ fun TbocHexagramView(
 @Composable
 private fun HexaHeader(
     hexagram: Hexagram,
+    symbolHeight: Dp,
+    logogramPadding: Dp,
     modifier: Modifier = Modifier,
     showEmptyLine: Boolean = true,
 ) {
@@ -88,67 +128,32 @@ private fun HexaHeader(
         TbocHexagramSymbol(
             rawStrokes = hexagram.symbolStrokes,
             modifier = Modifier
-                .padding(all = 8.dp)
-                .size(32.dp),
+                .size(symbolHeight * 12 / 10),
         )
 
         TbocHexaLogogram(
             hexagram = hexagram,
             fontSize = MaterialTheme.typography.headlineMedium.fontSize,
             modifier = Modifier
-                .padding(start = 8.dp, top = 8.dp, end = 8.dp),
-//                .padding(all = 8.dp),
+                .padding(start = logogramPadding),
             showEmptyLine = showEmptyLine,
         )
     }
 }
 
 @Composable
-private fun OldHexaHeader(
-    hexagram: Hexagram,
-    modifier: Modifier = Modifier,
-) {
-    Row(modifier = modifier.fillMaxWidth()) {
-        TbocHexagramSymbol(
-            rawStrokes = hexagram.symbolStrokes,
-            modifier = Modifier
-                .padding(all = 8.dp)
-                .size(32.dp)
-                .align(alignment = Alignment.CenterVertically),
-        )
-
-        Text(
-            text = buildAnnotatedString {
-                withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                    append("${hexagram.id}. ")
-                }
-                append(hexagram.title)
-            },
-            modifier = Modifier
-                .padding(top = 8.dp)
-                .weight(weight = 1.0f),
-        )
-
-        TbocHexaLogogram(
-            hexagram = hexagram,
-            modifier = Modifier.padding(start = 8.dp, top = 8.dp, end = 8.dp)
-        )
-    }
-}
-
-
-@Composable
 private fun NarrowStrokeView(
     rawStrokes: List<Boolean>,
     idx: Int,
-    stroke: HexagramStroke
+    stroke: HexagramStroke,
+    symbolHeight: Dp,
+    textPaddingTop: Dp,
+    modifier: Modifier = Modifier,
 ) {
-    Column {
+    Column(modifier = modifier) {
         TbocHexagramSymbol(
             rawStrokes = rawStrokes,
-            modifier = Modifier
-                .padding(top = 8.dp)
-                .size(32.dp),
+            modifier = Modifier.size(symbolHeight),
             highlightIndex = idx,
         )
 
@@ -160,7 +165,7 @@ private fun NarrowStrokeView(
                     append(stroke.summary)
                 }
             },
-            modifier = Modifier.padding(vertical = 8.dp),
+            modifier = Modifier.padding(top = textPaddingTop),
         )
     }
 }
@@ -169,14 +174,18 @@ private fun NarrowStrokeView(
 private fun WideStrokeView(
     rawStrokes: List<Boolean>,
     idx: Int,
-    stroke: HexagramStroke
+    stroke: HexagramStroke,
+    symbolHeight: Dp,
+    symbolPaddingTop: Dp,
+    symbolPaddingEnd: Dp,
+    modifier: Modifier = Modifier,
 ) {
-    Row(modifier = Modifier.padding(top = 8.dp)) {
+    Row(modifier = modifier) {
         TbocHexagramSymbol(
             rawStrokes = rawStrokes,
             modifier = Modifier
-//                .padding(top = 7.dp)
-                .size(32.dp),
+                .padding(top = symbolPaddingTop, end = symbolPaddingEnd)
+                .size(symbolHeight),
             highlightIndex = idx,
         )
 
@@ -188,7 +197,6 @@ private fun WideStrokeView(
                     append(stroke.summary)
                 }
             },
-            modifier = Modifier.padding(vertical = 8.dp),
         )
     }
 }
@@ -197,10 +205,7 @@ private fun WideStrokeView(
 @Composable
 fun TbocHexagramViewPreview() {
     TbocTheme {
-        Surface(
-            modifier = Modifier
-            // .fillMaxSize(),
-        ) {
+        Surface {
             TbocHexagramView(
                 hexagram = previewHexagrams[0],
                 modifier = Modifier

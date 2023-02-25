@@ -1,20 +1,20 @@
-The book of changes / Книга перемен
+The book of changes / Книга перемен
 ==================
 
-# Brief in English
+# Brief in English
 
-This project is some kind of demo project.
+This project is some kind of demo project.
 
-The book used in application was published in Russian in 1930+ year (more than 60 years ago).
+The book used in application was published in Russian in 1930+ year (more than 60 years ago).
 
 So, this application supports Russian language only.
 
-NOTE: the application architecture based on [nowinandroid](https://github.com/android/nowinandroid) project.
+NOTE: the application architecture based on [nowinandroid](https://github.com/android/nowinandroid) project.
 
-# Кратко на русском
+# Кратко на русском
 
 Это простой демо-проект.
 
-В проекте используется текст книги "Китайская Классическая Книга Перемен И-Цзин", опубликованной в 1930-х годах.
+В проекте используется текст книги «Китайская Классическая Книга Перемен И-Цзин», опубликованной в 1930-х годах.
 
-Примечание: архитектура проекта основана на идеях [nowinandroid](https://github.com/android/nowinandroid).
+Примечание: архитектура проекта основана на идеях [nowinandroid](https://github.com/android/nowinandroid).

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 kroman139
+ * Copyright (c) 2022-2023 kroman139
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package local.kroman139.thebookofchanges.designsystem.component
 
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.LocalContentColor
@@ -24,6 +24,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -51,51 +52,58 @@ fun TbocHexagramSymbol(
         highlightColor.copy(alpha = 0.3f)
     }
 
-    Canvas(
-        modifier = modifier,
-    ) {
-        val canvasWidth = size.width
-        val canvasHeight = size.height
+    Spacer(
+        modifier = modifier
+            .drawWithCache {
+                val rowHeight = this.size.height / 11.0f
 
-        val fullStrokeSize = Size(
-            width = canvasWidth,
-            height = canvasHeight / 11.0f
-        )
-        val partStrokeSize = Size(
-            width = canvasWidth / 3.0f,
-            height = canvasHeight / 11.0f
-        )
+                val fullStrokeSize = Size(
+                    width = this.size.width,
+                    height = rowHeight
+                )
 
-        rawStrokes.forEachIndexed { idx, isSolid ->
-            val index = rawStrokes.size - idx - 1
-            val yOffset = index * 2.0f * fullStrokeSize.height
+                val partStrokeSize = Size(
+                    width = this.size.width / 3.0f,
+                    height = rowHeight
+                )
 
-            val color = if (idx == highlightIndex) {
-                highlightColor
-            } else {
-                strokeColor
+                val part2Offset = this.size.width - partStrokeSize.width
+
+                onDrawBehind {
+                    rawStrokes.forEachIndexed { idx, isSolid ->
+                        // Strokes are drawn from the bottom up.
+                        val index = rawStrokes.size - idx - 1
+                        val yOffset = index * 2.0f * rowHeight
+
+                        val rectColor = if (idx == highlightIndex) {
+                            highlightColor
+                        } else {
+                            strokeColor
+                        }
+
+                        if (isSolid) {
+                            drawRect(
+                                color = rectColor,
+                                topLeft = Offset(x = 0.0f, y = yOffset),
+                                size = fullStrokeSize,
+                            )
+                        } else {
+                            drawRect(
+                                color = rectColor,
+                                topLeft = Offset(x = 0.0f, y = yOffset),
+                                size = partStrokeSize,
+                            )
+                            drawRect(
+                                color = rectColor,
+                                topLeft = Offset(x = part2Offset, y = yOffset),
+                                size = partStrokeSize,
+                            )
+                        }
+                    }
+
+                }
             }
-
-            if (isSolid) {
-                drawRect(
-                    color = color,
-                    topLeft = Offset(x = 0.0f, y = yOffset),
-                    size = fullStrokeSize,
-                )
-            } else {
-                drawRect(
-                    color = color,
-                    topLeft = Offset(x = 0.0f, y = yOffset),
-                    size = partStrokeSize,
-                )
-                drawRect(
-                    color = color,
-                    topLeft = Offset(x = canvasWidth - partStrokeSize.width, y = yOffset),
-                    size = partStrokeSize,
-                )
-            }
-        }
-    }
+    )
 }
 
 @Preview
@@ -125,7 +133,7 @@ fun HexagramSymbolPreview2() {
             TbocHexagramSymbol(
                 rawStrokes = listOf(true, false, true, false, false, true),
                 modifier = Modifier
-                    .padding(all = 16.dp)
+                    .padding(all = 8.dp)
                     .size(64.dp),
                 highlightIndex = 2,
             )
